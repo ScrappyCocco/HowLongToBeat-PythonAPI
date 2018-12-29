@@ -1,4 +1,7 @@
 # HowLongToBeat Python API
+[![Build Status](https://travis-ci.org/ScrappyCocco/HowLongToBeat-PythonAPI.svg?branch=master)](https://travis-ci.org/ScrappyCocco/HowLongToBeat-PythonAPI)
+[![codecov](https://codecov.io/gh/ScrappyCocco/HowLongToBeat-PythonAPI/branch/master/graph/badge.svg)](https://codecov.io/gh/ScrappyCocco/HowLongToBeat-PythonAPI)
+
 A simple Python API to read data from howlongtobeat.com.
 
 It is inspired by [ckatzorke - howlongtobeat](https://github.com/ckatzorke/howlongtobeat) JS API.
