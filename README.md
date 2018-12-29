@@ -60,15 +60,16 @@ if results_list is not None and len(results_list) > 0:
             max_sim = element.similarity
             best_element = element
 ```
+
 At the end of the for cycle "best_element" will contain the best game found in the research.
 
 ### Reading an entry
 
-An entry is made of few values, you can check them [in the Entry class file](https://github.com/ScrappyCocco/HowLongToBeat-PythonAPI/blob/master/howlongtobeatpy/howlongtobeatpy/HowLongToBeatEntry.py) 
+An entry is made of few values, you can check them [in the Entry class file](https://github.com/ScrappyCocco/HowLongToBeat-PythonAPI/blob/master/howlongtobeatpy/howlongtobeatpy/HowLongToBeatEntry.py)
 
 ## Found a bug?
 
-Please report it as soon as you can creating an [issue](https://github.com/ScrappyCocco/HowLongToBeat-PythonAPI/issues/new) the code may bot be perfect.
+Please report it as soon as you can creating an [issue](https://github.com/ScrappyCocco/HowLongToBeat-PythonAPI/issues/new), the code may not be perfect.
 
 ## Authors
 
