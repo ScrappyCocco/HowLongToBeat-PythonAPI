@@ -6,3 +6,9 @@ howlongtobeatpy/dist/
 howlongtobeatpy/tests/__pycache__/
 
 howlongtobeatpy/howlongtobeatpy/__pycache__/
+
+howlongtobeatpy/howlongtobeatpy\.egg-info/
+
+howlongtobeatpy/LICENSE\.md
+
+howlongtobeatpy/README\.md
