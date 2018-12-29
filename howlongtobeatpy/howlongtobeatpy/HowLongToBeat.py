@@ -23,7 +23,7 @@ class HowLongToBeat:
         """
         Function that search the game using an async request
         :param game_name: The original game name received as input
-        :return: A list of possible games
+        :return: A list of possible games (or None in case of wrong parameter or failed request)
         """
         if game_name is None or len(game_name) == 0:
             return None
@@ -37,7 +37,7 @@ class HowLongToBeat:
         """
         Function that search the game using a normal request
         :param game_name: The original game name received as input
-        :return: A list of possible games
+        :return: A list of possible games (or None in case of wrong parameter or failed request)
         """
         if game_name is None or len(game_name) == 0:
             return None

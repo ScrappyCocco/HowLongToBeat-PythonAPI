@@ -57,7 +57,7 @@ class HTMLResultParser(HTMLParser):
                     if att[0] == "src":
                         self.current_entry.game_image_url = att[1]
 
-            if tag == "div":
+            if tag == "div":  # Save that i have entered a <div> tag
                 self.inside_a_div = True
 
     # OVERRIDE from HTMLParser
@@ -72,13 +72,13 @@ class HTMLResultParser(HTMLParser):
             # If the similarity is too low skipping adding it to results list
             if self.current_entry.similarity > 0.4:
                 self.results.append(self.current_entry)
-            # Create a new entry for the next possible game
-            self.current_entry = HowLongToBeatEntry()
+            # Set the current entry to None, will be created on the next <li>
+            self.current_entry = None
 
     # OVERRIDE from HTMLParser
     def handle_data(self, data):
         if self.inside_a_div:
-            # If i'm inside a <div> i must analyze all the possible times, saving title and then value
+            # If i'm inside a <div> i must analyze all the possible times, saving title and then his value
             if data.lower().strip() == "main story" \
                     or data.lower().strip() == "single-player" \
                     or data.lower().strip() == "solo":
@@ -109,7 +109,7 @@ class HTMLResultParser(HTMLParser):
         """
         Function that return the number part from the string
         :param time_string: The original string with the time (ex. 50 Hours)
-        :return: the numeric part of that time (ex. 50 or 51½ , is a string)
+        :return: the numeric part of that time (ex. 50 or 51½ , IS A STRING)
         """
         if "-" in time_string:
             return 0
