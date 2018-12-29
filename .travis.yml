@@ -8,6 +8,6 @@ install:
   - pip install codecov
 # command to run tests
 script:
-  - nosetests --with-coverage
+  - nosetests howlongtobeatpy --with-coverage
 after_success:
   - codecov
