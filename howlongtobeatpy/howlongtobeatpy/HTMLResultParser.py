@@ -83,12 +83,15 @@ class HTMLResultParser(HTMLParser):
                     or data.lower().strip() == "single-player" \
                     or data.lower().strip() == "solo":
                 self.currently_reading = "main"
+                self.current_entry.gameplay_main_label = data.strip()
                 return
             if data.lower().strip() == "main + extra" or data.lower().strip() == "co-op":
                 self.currently_reading = "main&extra"
+                self.current_entry.gameplay_main_extra_label = data.strip()
                 return
             if data.lower().strip() == "completionist" or data.lower().strip() == "vs.":
                 self.currently_reading = "complete"
+                self.current_entry.gameplay_completionist_label = data.strip()
                 return
             # If i've just read a title, and i find data, i save the time in the current_entry
             if self.currently_reading == "main" and len(data.strip()) > 0:
@@ -112,7 +115,7 @@ class HTMLResultParser(HTMLParser):
         :return: the numeric part of that time (ex. 50 or 51½ , IS A STRING)
         """
         if "-" in time_string:
-            return 0
+            return -1
         end_pos = time_string.find(' ')
         return time_string[:end_pos].strip()
 
