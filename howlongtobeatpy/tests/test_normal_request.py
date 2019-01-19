@@ -27,6 +27,7 @@ class TestNormalRequest(TestCase):
 
     def test_simple_game_name(self):
         results = HowLongToBeat().search("Celeste")
+        self.assertNotEqual(None, results, "Search Results are None")
         best_result = self.getMaxSimilarityElement(results)
         self.assertEqual("Celeste", best_result.game_name)
         self.assertEqual("Main Story", best_result.gameplay_main_label)
@@ -36,6 +37,7 @@ class TestNormalRequest(TestCase):
 
     def test_game_name(self):
         results = HowLongToBeat().search("A way out")
+        self.assertNotEqual(None, results, "Search Results are None")
         best_result = self.getMaxSimilarityElement(results)
         self.assertEqual("A Way Out", best_result.game_name)
         self.assertEqual("Main Story", best_result.gameplay_main_label)
@@ -45,6 +47,7 @@ class TestNormalRequest(TestCase):
 
     def test_game_name_with_numbers(self):
         results = HowLongToBeat().search("The Witcher 3")
+        self.assertNotEqual(None, results, "Search Results are None")
         best_result = self.getMaxSimilarityElement(results)
         self.assertEqual("The Witcher 3: Wild Hunt", best_result.game_name)
         self.assertEqual("Main Story", best_result.gameplay_main_label)
@@ -54,6 +57,7 @@ class TestNormalRequest(TestCase):
 
     def test_game_with_no_all_values(self):
         results = HowLongToBeat().search("Black Desert Online")
+        self.assertNotEqual(None, results, "Search Results are None")
         best_result = self.getMaxSimilarityElement(results)
         self.assertEqual("Black Desert Online", best_result.game_name)
         self.assertEqual("Solo", best_result.gameplay_main_label)

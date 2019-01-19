@@ -16,7 +16,7 @@ class HowLongToBeat:
     """
 
     BASE_URL = 'https://howlongtobeat.com/'
-    SEARCH_URL = BASE_URL + "search_main.php"
+    SEARCH_URL = BASE_URL + "search_results.php"
     GAME_URL = BASE_URL + "game.php?id="
 
     async def async_search(self, game_name: str):
