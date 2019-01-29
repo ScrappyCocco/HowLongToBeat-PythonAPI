@@ -5,6 +5,8 @@ from .HowLongToBeatEntry import HowLongToBeatEntry
 from html.parser import HTMLParser
 from difflib import SequenceMatcher
 
+import re
+
 
 # ---------------------------------------------------------------------
 
@@ -144,7 +146,8 @@ class HTMLResultParser(HTMLParser):
         similarity = SequenceMatcher(None, a, b).ratio()
         if game_name_numbers is not None and len(game_name_numbers) > 0:  # additional check about numbers in the string
             number_found = False
-            for word in b.split(" "):  # check for every word
+            cleaned = re.sub(r'([^\s\w]|_)+', '', b)
+            for word in cleaned.split(" "):  # check for every word
                 if word.isdigit():  # if is a digit
                     for number_entry in game_name_numbers:  # compare it with numbers in the begin string
                         if str(number_entry) == str(word):

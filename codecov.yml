@@ -1,0 +1,4 @@
+coverage:
+  ignore:
+    - "howlongtobeatpy/tests/test_normal_request.py"
+    - "howlongtobeatpy/tests/test_async_request.py"
