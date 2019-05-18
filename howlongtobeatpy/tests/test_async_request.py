@@ -49,9 +49,9 @@ class TestAsyncRequest(TestCase):
         self.assertEqual("Co-Op", best_result.gameplay_main_extra_label)
         self.assertEqual("Vs.", best_result.gameplay_completionist_label)
         self.assertAlmostEqual(105, TestNormalRequest.getSimpleNumber(best_result.gameplay_main), delta=5)
-        self.assertEqual(None, best_result.gameplay_main_extra_unit)
+        self.assertEqual("Hours", best_result.gameplay_main_extra_unit)
         self.assertEqual(None, best_result.gameplay_completionist_unit)
-        self.assertEqual(-1, TestNormalRequest.getSimpleNumber(best_result.gameplay_main_extra))
+        self.assertAlmostEqual(13, TestNormalRequest.getSimpleNumber(best_result.gameplay_main_extra), delta=5)
         self.assertEqual(-1, TestNormalRequest.getSimpleNumber(best_result.gameplay_completionist))
 
     @async_test
