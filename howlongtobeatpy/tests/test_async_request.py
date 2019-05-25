@@ -41,18 +41,19 @@ class TestAsyncRequest(TestCase):
 
     @async_test
     async def test_game_with_no_all_values(self):
-        results = await HowLongToBeat().async_search("Black Desert Online")
+        results = await HowLongToBeat().async_search("Battlefield 2142")
         self.assertNotEqual(None, results, "Search Results are None")
         best_result = TestNormalRequest.getMaxSimilarityElement(results)
-        self.assertEqual("Black Desert Online", best_result.game_name)
-        self.assertEqual("Solo", best_result.gameplay_main_label)
+        self.assertEqual("Battlefield 2142", best_result.game_name)
+        self.assertEqual(None, best_result.gameplay_main_label)
         self.assertEqual("Co-Op", best_result.gameplay_main_extra_label)
         self.assertEqual("Vs.", best_result.gameplay_completionist_label)
-        self.assertAlmostEqual(105, TestNormalRequest.getSimpleNumber(best_result.gameplay_main), delta=5)
-        self.assertEqual("Hours", best_result.gameplay_main_extra_unit)
-        self.assertEqual(None, best_result.gameplay_completionist_unit)
-        self.assertAlmostEqual(13, TestNormalRequest.getSimpleNumber(best_result.gameplay_main_extra), delta=5)
-        self.assertEqual(-1, TestNormalRequest.getSimpleNumber(best_result.gameplay_completionist))
+        self.assertAlmostEqual(80, TestNormalRequest.getSimpleNumber(best_result.gameplay_completionist), delta=5)
+        self.assertEqual("Hours", best_result.gameplay_completionist_unit)
+        self.assertEqual(None, best_result.gameplay_main_unit)
+        self.assertEqual(None, best_result.gameplay_main_extra_unit)
+        self.assertEqual(-1, TestNormalRequest.getSimpleNumber(best_result.gameplay_main))
+        self.assertEqual(-1, TestNormalRequest.getSimpleNumber(best_result.gameplay_main_extra))
 
     @async_test
     async def test_no_real_game(self):

@@ -56,18 +56,19 @@ class TestNormalRequest(TestCase):
         self.assertAlmostEqual(50, self.getSimpleNumber(best_result.gameplay_main), delta=5)
 
     def test_game_with_no_all_values(self):
-        results = HowLongToBeat().search("Black Desert Online")
+        results = HowLongToBeat().search("Battlefield 2142")
         self.assertNotEqual(None, results, "Search Results are None")
-        best_result = self.getMaxSimilarityElement(results)
-        self.assertEqual("Black Desert Online", best_result.game_name)
-        self.assertEqual("Solo", best_result.gameplay_main_label)
+        best_result = TestNormalRequest.getMaxSimilarityElement(results)
+        self.assertEqual("Battlefield 2142", best_result.game_name)
+        self.assertEqual(None, best_result.gameplay_main_label)
         self.assertEqual("Co-Op", best_result.gameplay_main_extra_label)
         self.assertEqual("Vs.", best_result.gameplay_completionist_label)
-        self.assertAlmostEqual(105, self.getSimpleNumber(best_result.gameplay_main), delta=5)
-        self.assertEqual("Hours", best_result.gameplay_main_extra_unit)
-        self.assertEqual(None, best_result.gameplay_completionist_unit)
-        self.assertAlmostEqual(13, TestNormalRequest.getSimpleNumber(best_result.gameplay_main_extra), delta=5)
-        self.assertEqual(-1, self.getSimpleNumber(best_result.gameplay_completionist))
+        self.assertAlmostEqual(80, TestNormalRequest.getSimpleNumber(best_result.gameplay_completionist), delta=5)
+        self.assertEqual("Hours", best_result.gameplay_completionist_unit)
+        self.assertEqual(None, best_result.gameplay_main_unit)
+        self.assertEqual(None, best_result.gameplay_main_extra_unit)
+        self.assertEqual(-1, TestNormalRequest.getSimpleNumber(best_result.gameplay_main))
+        self.assertEqual(-1, TestNormalRequest.getSimpleNumber(best_result.gameplay_main_extra))
 
     def test_no_real_game(self):
         results = HowLongToBeat().search("asfjklagls")
