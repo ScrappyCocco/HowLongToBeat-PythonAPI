@@ -54,15 +54,10 @@ If the list **is not None** you should choose the best entry checking the Simila
 ```python
 results_list = await HowLongToBeat().async_search("Awesome Game")
 if results_list is not None and len(results_list) > 0:
-    max_sim = -1
-    best_element = None
-    for element in results_list:
-        if element.similarity > max_sim:
-            max_sim = element.similarity
-            best_element = element
+    best_element = max(element.similarity for element in results_list)
 ```
 
-At the end of the for cycle "best_element" will contain the best game found in the research.
+Once done, "best_element" will contain the best game found in the research.
 
 ### Reading an entry
 
