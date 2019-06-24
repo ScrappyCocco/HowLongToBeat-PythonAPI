@@ -6,13 +6,10 @@ class TestNormalRequest(TestCase):
 
     @staticmethod
     def getMaxSimilarityElement(list_of_results):
-        max_sim = -1
-        best_element = None
-        for element in list_of_results:
-            if element.similarity > max_sim:
-                max_sim = element.similarity
-                best_element = element
-        return best_element
+        if list_of_results is not None and len(list_of_results) > 0:
+            return max(list_of_results, key=lambda element: element.similarity)
+        else:
+            return None
 
     @staticmethod
     def getSimpleNumber(time_string):
