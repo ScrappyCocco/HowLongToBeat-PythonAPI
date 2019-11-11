@@ -2,3 +2,5 @@ coverage:
   ignore:
     - "howlongtobeatpy/tests/test_normal_request.py"
     - "howlongtobeatpy/tests/test_async_request.py"
+    - "howlongtobeatpy/tests/test_async_request_by_id.py"
+    - "howlongtobeatpy/tests/test_normal_request_by_id.py"
