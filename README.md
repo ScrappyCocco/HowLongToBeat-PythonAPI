@@ -59,6 +59,29 @@ if results_list is not None and len(results_list) > 0:
 
 Once done, "best_element" will contain the best game found in the research.
 
+### Alternative search (by id)
+
+If you prefer, you can get a game by id, this can be useful if you already have the game's howlongtobeat-id.
+Unluckily, is not worth to make a parser for the single-page game info, because is a user page that can change frequently and full of HTML.
+
+To avoid a new parser, the search by id use a first request to get the game title, and then use the standard search, filtering the results and returning the unique game with that id.
+
+Remember than, that it could be a bit slower, but you avoid searching the game in the array.
+
+Here's the example:
+
+```python
+results = HowLongToBeat().search_from_id(123456)
+```
+
+or, if you prefer using async:
+
+```python
+results = await HowLongToBeat().async_search_from_id(123456)
+```
+
+This call will return an unique [HowLongToBeatEntry](https://github.com/ScrappyCocco/HowLongToBeat-PythonAPI/blob/master/howlongtobeatpy/howlongtobeatpy/HowLongToBeatEntry.py) or None in case of errors.
+
 ### Reading an entry
 
 An entry is made of few values, you can check them [in the Entry class file](https://github.com/ScrappyCocco/HowLongToBeat-PythonAPI/blob/master/howlongtobeatpy/howlongtobeatpy/HowLongToBeatEntry.py)

@@ -16,10 +16,11 @@ class HTMLResultParser(HTMLParser):
     This class override the default HTMLParser to analyze the HTML code received from HowLongToBeat
     """
 
-    def __init__(self, input_game_name: str, input_game_url: str):
+    def __init__(self, input_game_name: str, input_game_url: str, input_game_id: int = None):
         super().__init__()
         # Init instance variables
         self.results = []
+        self.game_id = input_game_id
         self.base_game_url = input_game_url
         self.current_entry = None
         self.li_encountered = False
@@ -68,6 +69,10 @@ class HTMLResultParser(HTMLParser):
             self.inside_a_div = False
         if tag == "li" and self.li_encountered:  # I finished reading the game entry
             self.li_encountered = False
+            # Check if the game can be added, if the id is different skip it
+            if self.game_id is not None and str(self.game_id) != str(self.current_entry.game_id):
+                return
+            # Can be added
             # Calculate name similarity with original input name
             self.current_entry.similarity = self.similar(self.game_name, self.current_entry.game_name,
                                                          self.game_name_numbers)

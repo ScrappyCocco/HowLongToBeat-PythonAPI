@@ -1,10 +1,9 @@
 # ---------------------------------------------------------------------
 # IMPORTS
 
-import aiohttp
-import requests
-
 from .HTMLResultParser import HTMLResultParser
+from .HTMLRequests import HTMLRequests
+
 
 # ---------------------------------------------------------------------
 
@@ -15,9 +14,9 @@ class HowLongToBeat:
     The search function is available using standard request or using an async request that MUST be awaited
     """
 
-    BASE_URL = 'https://howlongtobeat.com/'
-    SEARCH_URL = BASE_URL + "search_results.php"
-    GAME_URL = BASE_URL + "game.php?id="
+    # ------------------------------------------
+    # (Standard) Search functions using game name
+    # ------------------------------------------
 
     async def async_search(self, game_name: str):
         """
@@ -27,9 +26,9 @@ class HowLongToBeat:
         """
         if game_name is None or len(game_name) == 0:
             return None
-        html_result = await self.send_async_web_request(game_name)
+        html_result = await HTMLRequests.send_async_web_request(game_name)
         if html_result is not None:
-            return self.parse_web_result(game_name, html_result)
+            return self.__parse_web_result(game_name, html_result)
         else:
             return None
 
@@ -41,76 +40,76 @@ class HowLongToBeat:
         """
         if game_name is None or len(game_name) == 0:
             return None
-        html_result = self.send_web_request(game_name)
+        html_result = HTMLRequests.send_web_request(game_name)
         if html_result is not None:
-            return self.parse_web_result(game_name, html_result)
+            return self.__parse_web_result(game_name, html_result)
         else:
             return None
 
-    def send_web_request(self, game_name: str):
-        """
-        Function that search the game using an async request
-        :param game_name: The original game name received as input
-        :return: The HTML code of the research if the request returned 200(OK), None otherwise
-        """
-        headers = {
-            'content-type': 'application/x-www-form-urlencoded',
-            'accept': '*/*'
-        }
-        payload = {
-            'queryString': game_name,
-            't': 'games',
-            'sorthead': 'popular',
-            'sortd': 'Normal Order',
-            'plat': '',
-            'length_type': 'main',
-            'length_min': '',
-            'length_max': '',
-            'detail': '0'
-        }
-        # Make the post request and return the result if is valid
-        r = requests.post(self.SEARCH_URL, data=payload, headers=headers)
-        if r is not None and r.status_code == 200:
-            return r.text
-        else:
-            return None
+    # ------------------------------------------
+    # Search functions using game id
+    # ------------------------------------------
 
-    async def send_async_web_request(self, game_name: str):
+    async def async_search_from_id(self, game_id: int):
         """
         Function that search the game using an async request
-        :param game_name: The original game name received as input
-        :return: The HTML code of the research if the request returned 200(OK), None otherwise
+        To re-use code, i extract the game name and search game by name, picking only the game with the same id
+        Otherwise a new parser is necessary, and is probably not worth to maintain 2 different html parsers
+        Remember that this function use 2 requests: one to get the game title and one to get game data
+        :param game_id: The game id to get data
+        :return: The game data (single HowLongToBeatEntry object) or None in case of error
         """
-        headers = {
-            'content-type': 'application/x-www-form-urlencoded',
-            'accept': '*/*'
-        }
-        payload = {
-            'queryString': game_name,
-            't': 'games',
-            'sorthead': 'popular',
-            'sortd': 'Normal Order',
-            'plat': '',
-            'length_type': 'main',
-            'length_min': '',
-            'length_max': '',
-            'detail': '0'
-        }
-        # Make the post request and return the result if is valid
-        async with aiohttp.ClientSession() as session:
-            async with session.post(self.SEARCH_URL, data=payload, headers=headers) as resp:
-                if resp is not None and str(resp.status) == "200":
-                    return await resp.text()
-                else:
+        if game_id is None or game_id == 0:
+            return None
+        game_title = await HTMLRequests.async_get_game_title(game_id)
+        if game_title is not None:
+            html_result = await HTMLRequests.send_async_web_request(game_title)
+            if html_result is not None:
+                result_list = self.__parse_web_result(game_title, html_result, game_id)
+                if result_list is None or len(result_list) == 0 or len(result_list) > 1:
                     return None
+                else:
+                    return result_list[0]
+            else:
+                return None
+        else:
+            return None
 
-    def parse_web_result(self, game_name: str, html_result):
+    def search_from_id(self, game_id: int):
+        """
+        To re-use code, i extract the game name and search game by name, picking only the game with the same id
+        Otherwise a new parser is necessary, and is probably not worth to maintain 2 different html parsers
+        Remember that this function use 2 requests: one to get the game title and one to get game data
+        :param game_id: The game id to get data
+        :return: The game data (single HowLongToBeatEntry object) None in case of error
+        """
+        if game_id is None or game_id == 0:
+            return None
+        game_title = HTMLRequests.get_game_title(game_id)
+        if game_title is not None:
+            html_result = HTMLRequests.send_web_request(game_title)
+            if html_result is not None:
+                result_list = self.__parse_web_result(game_title, html_result, game_id)
+                if result_list is None or len(result_list) == 0 or len(result_list) > 1:
+                    return None
+                else:
+                    return result_list[0]
+            else:
+                return None
+        else:
+            return None
+
+    # ------------------------------------------
+    # Private utils functions
+    # ------------------------------------------
+
+    def __parse_web_result(self, game_name: str, html_result, game_id: int = None):
         """
         Function that call the HTML parser to get the data
         :param game_name: The original game name received as input
         :param html_result: The HTML received from the request
         :return: A list of possible games
         """
-        parser = HTMLResultParser(game_name, self.GAME_URL)
+        parser = HTMLResultParser(game_name, HTMLRequests.GAME_URL, game_id)
         parser.feed(html_result)
         return parser.results
