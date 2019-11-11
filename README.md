@@ -71,13 +71,13 @@ Remember than, that it could be a bit slower, but you avoid searching the game i
 Here's the example:
 
 ```python
-results = HowLongToBeat().search_from_id(123456)
+result = HowLongToBeat().search_from_id(123456)
 ```
 
 or, if you prefer using async:
 
 ```python
-results = await HowLongToBeat().async_search_from_id(123456)
+result = await HowLongToBeat().async_search_from_id(123456)
 ```
 
 This call will return an unique [HowLongToBeatEntry](https://github.com/ScrappyCocco/HowLongToBeat-PythonAPI/blob/master/howlongtobeatpy/howlongtobeatpy/HowLongToBeatEntry.py) or None in case of errors.
