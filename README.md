@@ -66,7 +66,7 @@ Unluckily, is not worth to make a parser for the single-page game info, because 
 
 To avoid a new parser, the search by id use a first request to get the game title, and then use the standard search, filtering the results and returning the unique game with that id.
 
-Remember than, that it could be a bit slower, but you avoid searching the game in the array.
+Remember that it could be a bit slower, but you avoid searching the game in the array.
 
 Here's the example:
 
