@@ -20,7 +20,7 @@ class HTMLRequests:
         """
         Function that search the game using a normal request
         :param game_name: The original game name received as input
-        :return: The HTML code of the research if the request returned 200(OK), None otherwise
+        :return The HTML code of the research if the request returned 200(OK), None otherwise
         """
         headers = {
             'content-type': 'application/x-www-form-urlencoded',
@@ -75,26 +75,43 @@ class HTMLRequests:
                     return None
 
     @staticmethod
+    def __cut_game_title(game_title: str):
+        """
+        Function that extract the game title from the html title of the howlongtobeat page
+        :param game_title: The HowLongToBeat page title of the game
+        For example "How long is A Way Out? | HowLongToBeat"
+        :return The cut game-title, without howlongtobeat names and grammatical symbols
+        So, in this example: "A Way Out"
+        """
+
+        if game_title is None or len(game_title) == 0:
+            return None
+
+        title = re.search("<title>([\w\W]*)<\/title>", game_title)
+        # The position of start and end of this method may change if the website change
+        cut_title = str(html.unescape(title.group(1)[12:-17]))
+        return cut_title
+
+    @staticmethod
     def get_game_title(game_id: int):
         """
         Function that gets the title of a game from the game (howlongtobeat) id
         :param game_id: id of the game to get the title
-        :returns The game title from the given id
+        :return The game title from the given id
         """
 
         url_get = HTMLRequests.GAME_URL + str(game_id)
 
         # Request and extract title
         contents = requests.get(url_get)
-        title = re.search("<title>([\w\W]*)<\/title>", contents.text)
-        return str(html.unescape(title.group(1)[12:-1]))
+        return HTMLRequests.__cut_game_title(contents.text)
 
     @staticmethod
     async def async_get_game_title(game_id: int):
         """
         Function that gets the title of a game from the game (howlongtobeat) id
         :param game_id: id of the game to get the title
-        :returns The game title from the given id
+        :return The game title from the given id
         """
 
         url_get = HTMLRequests.GAME_URL + str(game_id)
@@ -104,7 +121,6 @@ class HTMLRequests:
             async with session.post(url_get) as resp:
                 if resp is not None and str(resp.status) == "200":
                     text = await resp.text()
-                    title = re.search("<title>([\w\W]*)<\/title>", text)
-                    return str(html.unescape(title.group(1)[12:-1]))
+                    return HTMLRequests.__cut_game_title(text)
                 else:
                     return None
