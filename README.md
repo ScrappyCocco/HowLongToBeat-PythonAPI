@@ -58,6 +58,7 @@ if results_list is not None and len(results_list) > 0:
 ```
 
 Once done, "best_element" will contain the best game found in the research.
+Every entry in the list (if not None in case of errors) is an object of type: [HowLongToBeatEntry](https://github.com/ScrappyCocco/HowLongToBeat-PythonAPI/blob/master/howlongtobeatpy/howlongtobeatpy/HowLongToBeatEntry.py).
 
 ### Alternative search (by id)
 
@@ -81,6 +82,16 @@ result = await HowLongToBeat().async_search_from_id(123456)
 ```
 
 This call will return an unique [HowLongToBeatEntry](https://github.com/ScrappyCocco/HowLongToBeat-PythonAPI/blob/master/howlongtobeatpy/howlongtobeatpy/HowLongToBeatEntry.py) or None in case of errors.
+
+### Results auto-filter
+To ignore games with a very different name, the standard search automatically filter results with a game name that has a similarity with the given name > than `0.4`, not adding the others to the result list.
+If you want all the results, or you want to change this value, you can put a parameter in the constructor:
+```python
+results = HowLongToBeat(0.0).search("Awesome Game")
+```
+putting `0.0` (or just `0`) will return all the found games, otherwise you can write another (`float`) number between 0...1 to set a new filter, such as `0.7`.
+
+**Remember** that, when searching by ID, this value is ignored.
 
 ### Reading an entry
 

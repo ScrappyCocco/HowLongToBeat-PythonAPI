@@ -15,6 +15,19 @@ class HowLongToBeat:
     """
 
     # ------------------------------------------
+    # Constructor with optional parameters
+    # ------------------------------------------
+
+    def __init__(self, input_minimum_similarity: float = 0.4):
+        """
+        @param input_minimum_similarity: Minimum similarity to use to filter the results with the found name,
+        0 will return all the results; 1 means perfectly equal and should not be used; default is 0.4;
+        """
+        self.minimum_similarity = input_minimum_similarity
+
+    # body of the constructor
+
+    # ------------------------------------------
     # (Standard) Search functions using game name
     # ------------------------------------------
 
@@ -110,6 +123,11 @@ class HowLongToBeat:
         :param html_result: The HTML received from the request
         :return: A list of possible games
         """
-        parser = HTMLResultParser(game_name, HTMLRequests.GAME_URL, game_id)
+        if game_id is None:
+            parser = HTMLResultParser(game_name, HTMLRequests.GAME_URL, self.minimum_similarity, game_id)
+        else:
+            # If the search is by id, ignore class minimum_similarity and set it to 0.0
+            # The result is filter by ID anyway, so the similarity shouldn't count too much
+            parser = HTMLResultParser(game_name, HTMLRequests.GAME_URL, 0.0, game_id)
         parser.feed(html_result)
         return parser.results

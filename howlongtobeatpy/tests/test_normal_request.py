@@ -22,6 +22,13 @@ class TestNormalRequest(TestCase):
         else:
             return int(time_string)
 
+    def test_simple_similarity_value(self):
+        results_all = HowLongToBeat(0.0).search("Grip")
+        results_default = HowLongToBeat().search("Grip")
+        results_impossible = HowLongToBeat(1.0).search("Grip")
+        self.assertTrue(len(results_all) > len(results_default))
+        self.assertTrue(len(results_impossible) == 0)
+
     def test_simple_game_name(self):
         results = HowLongToBeat().search("Celeste")
         self.assertNotEqual(None, results, "Search Results are None")
