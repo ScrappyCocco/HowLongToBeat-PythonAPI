@@ -17,6 +17,12 @@ class TestAsyncRequestById(TestCase):
         self.assertAlmostEqual(12, TestNormalRequest.getSimpleNumber(result.gameplay_main_extra), delta=5)
 
     @async_test
+    async def test_game_name_with_colon(self):
+        result = await HowLongToBeat().async_search_from_id(4256)
+        self.assertNotEqual(None, result, "Search Results are None")
+        self.assertEqual("Half-Life: Opposing Force", result.game_name)
+
+    @async_test
     async def test_game_name(self):
         result = await HowLongToBeat().async_search_from_id(46386)
         self.assertNotEqual(None, result, "Search Result is None")
@@ -30,9 +36,7 @@ class TestAsyncRequestById(TestCase):
     async def test_game_name_with_numbers(self):
         result = await HowLongToBeat().async_search_from_id(10270)
         self.assertNotEqual(None, result, "Search Result is None")
-        self.assertEqual(TestNormalRequest.cleanTitle("The Witcher 3: Wild Hunt"),
-                         TestNormalRequest.cleanTitle(result.game_name)
-                         )
+        self.assertEqual("The Witcher 3: Wild Hunt", result.game_name)
         self.assertEqual("Main Story", result.gameplay_main_label)
         self.assertEqual("Main + Extra", result.gameplay_main_extra_label)
         self.assertEqual("Completionist", result.gameplay_completionist_label)

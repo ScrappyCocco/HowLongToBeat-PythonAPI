@@ -5,10 +5,6 @@ from howlongtobeatpy import HowLongToBeat
 class TestNormalRequest(TestCase):
 
     @staticmethod
-    def cleanTitle(title):
-        return "".join(c for c in title if c not in ('!', '.', ':'))
-
-    @staticmethod
     def getMaxSimilarityElement(list_of_results):
         if list_of_results is not None and len(list_of_results) > 0:
             return max(list_of_results, key=lambda element: element.similarity)
@@ -36,6 +32,12 @@ class TestNormalRequest(TestCase):
         self.assertEqual("Completionist", best_result.gameplay_completionist_label)
         self.assertAlmostEqual(12, self.getSimpleNumber(best_result.gameplay_main_extra), delta=5)
 
+    def test_game_name_with_colon(self):
+        results = HowLongToBeat().search("Half-Life: Opposing Force")
+        self.assertNotEqual(None, results, "Search Results are None")
+        best_result = self.getMaxSimilarityElement(results)
+        self.assertEqual("Half-Life: Opposing Force", best_result.game_name)
+
     def test_game_name(self):
         results = HowLongToBeat().search("A way out")
         self.assertNotEqual(None, results, "Search Results are None")
@@ -50,9 +52,7 @@ class TestNormalRequest(TestCase):
         results = HowLongToBeat().search("The Witcher 3")
         self.assertNotEqual(None, results, "Search Results are None")
         best_result = self.getMaxSimilarityElement(results)
-        self.assertEqual(TestNormalRequest.cleanTitle("The Witcher 3: Wild Hunt"),
-                         TestNormalRequest.cleanTitle(best_result.game_name)
-                         )
+        self.assertEqual("The Witcher 3: Wild Hunt", best_result.game_name)
         self.assertEqual("Main Story", best_result.gameplay_main_label)
         self.assertEqual("Main + Extra", best_result.gameplay_main_extra_label)
         self.assertEqual("Completionist", best_result.gameplay_completionist_label)

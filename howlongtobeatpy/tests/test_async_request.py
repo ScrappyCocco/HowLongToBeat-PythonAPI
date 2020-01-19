@@ -18,6 +18,13 @@ class TestAsyncRequest(TestCase):
         self.assertAlmostEqual(12, TestNormalRequest.getSimpleNumber(best_result.gameplay_main_extra), delta=5)
 
     @async_test
+    async def test_game_name_with_colon(self):
+        results = await HowLongToBeat().async_search("Half-Life: Opposing Force")
+        self.assertNotEqual(None, results, "Search Results are None")
+        best_result = TestNormalRequest.getMaxSimilarityElement(results)
+        self.assertEqual("Half-Life: Opposing Force", best_result.game_name)
+
+    @async_test
     async def test_game_name(self):
         results = await HowLongToBeat().async_search("A way out")
         self.assertNotEqual(None, results, "Search Results are None")
@@ -33,9 +40,7 @@ class TestAsyncRequest(TestCase):
         results = await HowLongToBeat().async_search("The Witcher 3")
         self.assertNotEqual(None, results, "Search Results are None")
         best_result = TestNormalRequest.getMaxSimilarityElement(results)
-        self.assertEqual(TestNormalRequest.cleanTitle("The Witcher 3: Wild Hunt"),
-                         TestNormalRequest.cleanTitle(best_result.game_name)
-                         )
+        self.assertEqual("The Witcher 3: Wild Hunt", best_result.game_name)
         self.assertEqual("Main Story", best_result.gameplay_main_label)
         self.assertEqual("Main + Extra", best_result.gameplay_main_extra_label)
         self.assertEqual("Completionist", best_result.gameplay_completionist_label)

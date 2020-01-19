@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setup(name='howlongtobeatpy',
-      version='0.1.9',
+      version='0.1.10',
       packages=find_packages(exclude=['tests']),
       description='A Python API for How Long to Beat',
       long_description=long_description,

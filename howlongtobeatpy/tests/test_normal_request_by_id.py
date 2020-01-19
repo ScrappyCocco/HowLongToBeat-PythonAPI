@@ -14,6 +14,11 @@ class TestNormalRequestById(TestCase):
         self.assertEqual("Completionist", result.gameplay_completionist_label)
         self.assertAlmostEqual(12, TestNormalRequest.getSimpleNumber(result.gameplay_main_extra), delta=5)
 
+    def test_game_name_with_colon(self):
+        result = HowLongToBeat().search_from_id(4256)
+        self.assertNotEqual(None, result, "Search Results are None")
+        self.assertEqual("Half-Life: Opposing Force", result.game_name)
+
     def test_game_name(self):
         result = HowLongToBeat().search_from_id(46386)
         self.assertNotEqual(None, result, "Search Result is None")
@@ -26,9 +31,7 @@ class TestNormalRequestById(TestCase):
     def test_game_name_with_numbers(self):
         result = HowLongToBeat().search_from_id(10270)
         self.assertNotEqual(None, result, "Search Result is None")
-        self.assertEqual(TestNormalRequest.cleanTitle("The Witcher 3: Wild Hunt"),
-                         TestNormalRequest.cleanTitle(result.game_name)
-                         )
+        self.assertEqual("The Witcher 3: Wild Hunt", result.game_name)
         self.assertEqual("Main Story", result.gameplay_main_label)
         self.assertEqual("Main + Extra", result.gameplay_main_extra_label)
         self.assertEqual("Completionist", result.gameplay_completionist_label)
