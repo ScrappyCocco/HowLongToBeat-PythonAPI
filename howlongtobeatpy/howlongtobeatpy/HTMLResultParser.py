@@ -83,7 +83,11 @@ class HTMLResultParser(HTMLParser):
                                                          self.game_name_numbers)
             # If the minimum_similarity is 0 just add the result
             # Otherwise if the similarity is < minimum_similarity skipping adding it to results list
-            if self.minimum_similarity == 0.0 or self.current_entry.similarity >= self.minimum_similarity:
+            if self.minimum_similarity == 0.0:
+                # Check that the entry is actually valid before adding it
+                if self.current_entry.game_name is not None and self.current_entry.game_id != -1:
+                    self.results.append(self.current_entry)
+            elif self.current_entry.similarity >= self.minimum_similarity:
                 self.results.append(self.current_entry)
             # Set the current entry to None, will be created on the next <li>
             self.current_entry = None

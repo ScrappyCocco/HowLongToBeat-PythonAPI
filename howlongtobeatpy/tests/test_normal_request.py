@@ -84,6 +84,10 @@ class TestNormalRequest(TestCase):
         results = HowLongToBeat().search("asfjklagls")
         self.assertEqual(0, len(results))
 
+    def test_no_real_game_with_similarity(self):
+        results = HowLongToBeat(0).search("asfjklagls")
+        self.assertEqual(0, len(results))
+
     def test_empty_game_name(self):
         results = HowLongToBeat().search("")
         self.assertEqual(None, results)
