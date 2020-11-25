@@ -2,7 +2,7 @@
 # IMPORTS
 
 from .HTMLResultParser import HTMLResultParser
-from .HTMLRequests import HTMLRequests
+from .HTMLRequests import HTMLRequests, SearchModifiers
 
 
 # ---------------------------------------------------------------------
@@ -31,29 +31,31 @@ class HowLongToBeat:
     # (Standard) Search functions using game name
     # ------------------------------------------
 
-    async def async_search(self, game_name: str):
+    async def async_search(self, game_name: str, search_modifiers: SearchModifiers = SearchModifiers.NONE):
         """
         Function that search the game using an async request
-        :param game_name: The original game name received as input
-        :return: A list of possible games (or None in case of wrong parameter or failed request)
+        @param game_name: The original game name received as input
+        @param search_modifiers: The "Modifiers" list in "Search Options", allow to show/isolate/hide DLCs
+        @return: A list of possible games (or None in case of wrong parameter or failed request)
         """
         if game_name is None or len(game_name) == 0:
             return None
-        html_result = await HTMLRequests.send_async_web_request(game_name)
+        html_result = await HTMLRequests.send_async_web_request(game_name, search_modifiers)
         if html_result is not None:
             return self.__parse_web_result(game_name, html_result)
         else:
             return None
 
-    def search(self, game_name: str):
+    def search(self, game_name: str, search_modifiers: SearchModifiers = SearchModifiers.NONE):
         """
         Function that search the game using a normal request
-        :param game_name: The original game name received as input
-        :return: A list of possible games (or None in case of wrong parameter or failed request)
+        @param game_name: The original game name received as input
+        @param search_modifiers: The "Modifiers" list in "Search Options", allow to show/isolate/hide DLCs
+        @return: A list of possible games (or None in case of wrong parameter or failed request)
         """
         if game_name is None or len(game_name) == 0:
             return None
-        html_result = HTMLRequests.send_web_request(game_name)
+        html_result = HTMLRequests.send_web_request(game_name, search_modifiers)
         if html_result is not None:
             return self.__parse_web_result(game_name, html_result)
         else:
@@ -69,8 +71,8 @@ class HowLongToBeat:
         To re-use code, i extract the game name and search game by name, picking only the game with the same id
         Otherwise a new parser is necessary, and is probably not worth to maintain 2 different html parsers
         Remember that this function use 2 requests: one to get the game title and one to get game data
-        :param game_id: The game id to get data
-        :return: The game data (single HowLongToBeatEntry object) or None in case of error
+        @param game_id: The game id to get data
+        @return: The game data (single HowLongToBeatEntry object) or None in case of error
         """
         if game_id is None or game_id == 0:
             return None
@@ -93,8 +95,8 @@ class HowLongToBeat:
         To re-use code, i extract the game name and search game by name, picking only the game with the same id
         Otherwise a new parser is necessary, and is probably not worth to maintain 2 different html parsers
         Remember that this function use 2 requests: one to get the game title and one to get game data
-        :param game_id: The game id to get data
-        :return: The game data (single HowLongToBeatEntry object) None in case of error
+        @param game_id: The game id to get data
+        @return: The game data (single HowLongToBeatEntry object) None in case of error
         """
         if game_id is None or game_id == 0:
             return None
@@ -119,9 +121,10 @@ class HowLongToBeat:
     def __parse_web_result(self, game_name: str, html_result, game_id: int = None):
         """
         Function that call the HTML parser to get the data
-        :param game_name: The original game name received as input
-        :param html_result: The HTML received from the request
-        :return: A list of possible games
+        @param game_name: The original game name received as input
+        @param html_result: The HTML received from the request
+        @param game_id: The game id to search
+        @return: A list of possible games
         """
         if game_id is None:
             parser = HTMLResultParser(game_name, HTMLRequests.GAME_URL, self.minimum_similarity, game_id)

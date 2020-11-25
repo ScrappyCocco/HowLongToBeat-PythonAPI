@@ -6,6 +6,7 @@ class HowLongToBeatEntry:
     The third value of each section contains the label
         (Can be Main Story/Main + Extras/Completionist/Single-Player/Solo/Co-Op/Vs.)
     """
+
     def __init__(self):
         # Base Game Details
         self.game_id = -1

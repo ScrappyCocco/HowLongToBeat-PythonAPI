@@ -5,9 +5,15 @@ import aiohttp
 import requests
 import re
 import html
+from enum import Enum
 
 
 # ---------------------------------------------------------------------
+
+class SearchModifiers(Enum):
+    NONE = ""
+    INCLUDE_DLC = "show_dlc"
+    ISOLATE_DLC = "only_dlc"
 
 
 class HTMLRequests:
@@ -16,11 +22,12 @@ class HTMLRequests:
     GAME_URL = BASE_URL + "game.php?id="
 
     @staticmethod
-    def send_web_request(game_name: str):
+    def send_web_request(game_name: str, search_modifiers: SearchModifiers = SearchModifiers.NONE):
         """
         Function that search the game using a normal request
-        :param game_name: The original game name received as input
-        :return The HTML code of the research if the request returned 200(OK), None otherwise
+        @param game_name: The original game name received as input
+        @param search_modifiers: The "Modifiers" list in "Search Options", allow to show/isolate/hide DLCs
+        @return: The HTML code of the research if the request returned 200(OK), None otherwise
         """
         headers = {
             'content-type': 'application/x-www-form-urlencoded',
@@ -35,7 +42,7 @@ class HTMLRequests:
             'length_type': 'main',
             'length_min': '',
             'length_max': '',
-            'detail': '0'
+            'detail': search_modifiers.value
         }
         # Make the post request and return the result if is valid
         r = requests.post(HTMLRequests.SEARCH_URL, data=payload, headers=headers)
@@ -45,11 +52,12 @@ class HTMLRequests:
             return None
 
     @staticmethod
-    async def send_async_web_request(game_name: str):
+    async def send_async_web_request(game_name: str, search_modifiers: SearchModifiers = SearchModifiers.NONE):
         """
         Function that search the game using an async request
-        :param game_name: The original game name received as input
-        :return: The HTML code of the research if the request returned 200(OK), None otherwise
+        @param game_name: The original game name received as input
+        @param search_modifiers: The "Modifiers" list in "Search Options", allow to show/isolate/hide DLCs
+        @return: The HTML code of the research if the request returned 200(OK), None otherwise
         """
         headers = {
             'content-type': 'application/x-www-form-urlencoded',
@@ -64,7 +72,7 @@ class HTMLRequests:
             'length_type': 'main',
             'length_min': '',
             'length_max': '',
-            'detail': '0'
+            'detail': search_modifiers.value
         }
         # Make the post request and return the result if is valid
         async with aiohttp.ClientSession() as session:
@@ -78,10 +86,10 @@ class HTMLRequests:
     def __cut_game_title(game_title: str):
         """
         Function that extract the game title from the html title of the howlongtobeat page
-        :param game_title: The HowLongToBeat page title of the game
-        For example "How long is A Way Out? | HowLongToBeat"
-        :return The cut game-title, without howlongtobeat names and grammatical symbols
-        So, in this example: "A Way Out"
+        @param game_title: The HowLongToBeat page title of the game
+        (For example "How long is A Way Out? | HowLongToBeat")
+        @return: The cut game-title, without howlongtobeat names and grammatical symbols
+        (So, in this example: "A Way Out")
         """
 
         if game_title is None or len(game_title) == 0:
@@ -96,8 +104,8 @@ class HTMLRequests:
     def get_game_title(game_id: int):
         """
         Function that gets the title of a game from the game (howlongtobeat) id
-        :param game_id: id of the game to get the title
-        :return The game title from the given id
+        @param game_id: id of the game to get the title
+        @return: The game title from the given id
         """
 
         url_get = HTMLRequests.GAME_URL + str(game_id)
@@ -110,8 +118,8 @@ class HTMLRequests:
     async def async_get_game_title(game_id: int):
         """
         Function that gets the title of a game from the game (howlongtobeat) id
-        :param game_id: id of the game to get the title
-        :return The game title from the given id
+        @param game_id: id of the game to get the title
+        @return: The game title from the given id
         """
 
         url_get = HTMLRequests.GAME_URL + str(game_id)

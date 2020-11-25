@@ -130,8 +130,8 @@ class HTMLResultParser(HTMLParser):
     def convert_time_to_number(time_string: str):
         """
         Function that return the number part from the string
-        :param time_string: The original string with the time (ex. 50 Hours)
-        :return: the numeric part of that time (ex. 50 or 51½ , IS A STRING)
+        @param time_string: The original string with the time (ex. 50 Hours)
+        @return: the numeric part of that time (ex. 50 or 51½ , IS A STRING)
         """
         if "-" in time_string:
             return -1
@@ -142,8 +142,8 @@ class HTMLResultParser(HTMLParser):
     def get_time_unit(time_string: str):
         """
         Function that return the time unit from the string (Minutes/Hours)
-        :param time_string: The original string with the time (ex. 50 Hours)
-        :return: the unit of that time (ex. "Hours")
+        @param time_string: The original string with the time (ex. 50 Hours)
+        @return: the unit of that time (ex. "Hours")
         """
         if "-" in time_string:
             return None
@@ -152,11 +152,12 @@ class HTMLResultParser(HTMLParser):
 
     @staticmethod
     def similar(a, b, game_name_numbers):
-        """ This function calculate how much the first string is similar to the second string
-        :param a: First String
-        :param b: Second String
-        :param game_name_numbers: All the numbers in <a> string, used for an additional check
-        :return: Return the similarity between the two string (0.0-1.0)
+        """
+        This function calculate how much the first string is similar to the second string
+        @param a: First String
+        @param b: Second String
+        @param game_name_numbers: All the numbers in <a> string, used for an additional check
+        @return: Return the similarity between the two string (0.0-1.0)
         """
         if a is None or b is None:
             return 0
