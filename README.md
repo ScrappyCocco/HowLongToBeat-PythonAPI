@@ -7,6 +7,22 @@ A simple Python API to read data from howlongtobeat.com.
 
 It is inspired by [ckatzorke - howlongtobeat](https://github.com/ckatzorke/howlongtobeat) JS API.
 
+## Content
+  - [Usage](#usage)
+  - [Installation](#installation)
+    - [Installing the package downloading the last release](#installing-the-package-downloading-the-last-release)
+    - [Installing the package from the source code](#installing-the-package-from-the-source-code)
+  - [Usage in code](#usage-in-code)
+    - [Start including it in your file](#start-including-it-in-your-file)
+    - [Now call search()](#now-call-search)
+    - [Alternative search (by id)](#alternative-search-by-id)
+    - [DLC search](#dlc-search)
+    - [Results auto-filter](#results-auto-filter)
+    - [Reading an entry](#reading-an-entry)
+  - [Found a bug?](#found-a-bug)
+  - [Authors](#authors)
+  - [License](#license)
+
 ## Usage
 
 ## Installation
@@ -82,6 +98,15 @@ result = await HowLongToBeat().async_search_from_id(123456)
 ```
 
 This call will return an unique [HowLongToBeatEntry](https://github.com/ScrappyCocco/HowLongToBeat-PythonAPI/blob/master/howlongtobeatpy/howlongtobeatpy/HowLongToBeatEntry.py) or None in case of errors.
+
+### DLC search
+Apparently in the default search DLCs don't appear (see: [#6](https://github.com/ScrappyCocco/HowLongToBeat-PythonAPI/issues/6)). An `enum` has been added:
+```python
+SearchModifiers.NONE
+SearchModifiers.INCLUDE_DLC
+SearchModifiers.ISOLATE_DLC
+```
+This optional parameter allow you to specify in the search if you want the default search (no DLCs), to INCLUDE DLCs along with games, or to ISOLATE DLCs (show only DLCs in the result).
 
 ### Results auto-filter
 To ignore games with a very different name, the standard search automatically filter results with a game name that has a similarity with the given name > than `0.4`, not adding the others to the result list.
