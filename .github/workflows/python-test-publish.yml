@@ -6,6 +6,8 @@ name: Python Test & Upload
 on:
   release:
     types: [created]
+  pull_request:
+      types: [opened, synchronize, reopened]
 
 jobs:
   deploy:
@@ -27,13 +29,16 @@ jobs:
       run: |
         nosetests howlongtobeatpy --with-coverage
         coverage xml
-    - name: Upload Coverage
+    - name: Upload Coverage codecov
       env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       run: |
         codecov
-        sonar-scanner
+    - name: SonarCloud Scan
+      uses: sonarsource/sonarcloud-github-action@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
     - name: Build and publish
       env:
         TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
