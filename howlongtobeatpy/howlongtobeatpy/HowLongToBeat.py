@@ -31,33 +31,37 @@ class HowLongToBeat:
     # (Standard) Search functions using game name
     # ------------------------------------------
 
-    async def async_search(self, game_name: str, search_modifiers: SearchModifiers = SearchModifiers.NONE):
+    async def async_search(self, game_name: str, search_modifiers: SearchModifiers = SearchModifiers.NONE,
+                           similarity_case_sensitive: bool = True):
         """
         Function that search the game using an async request
         @param game_name: The original game name received as input
         @param search_modifiers: The "Modifiers" list in "Search Options", allow to show/isolate/hide DLCs
+        @param similarity_case_sensitive: If the similarity check between names should be case sensitive (default true)
         @return: A list of possible games (or None in case of wrong parameter or failed request)
         """
         if game_name is None or len(game_name) == 0:
             return None
         html_result = await HTMLRequests.send_async_web_request(game_name, search_modifiers)
         if html_result is not None:
-            return self.__parse_web_result(game_name, html_result)
+            return self.__parse_web_result(game_name, html_result, None, similarity_case_sensitive)
         else:
             return None
 
-    def search(self, game_name: str, search_modifiers: SearchModifiers = SearchModifiers.NONE):
+    def search(self, game_name: str, search_modifiers: SearchModifiers = SearchModifiers.NONE,
+               similarity_case_sensitive: bool = True):
         """
         Function that search the game using a normal request
         @param game_name: The original game name received as input
         @param search_modifiers: The "Modifiers" list in "Search Options", allow to show/isolate/hide DLCs
+        @param similarity_case_sensitive: If the similarity check between names should be case sensitive (default true)
         @return: A list of possible games (or None in case of wrong parameter or failed request)
         """
         if game_name is None or len(game_name) == 0:
             return None
         html_result = HTMLRequests.send_web_request(game_name, search_modifiers)
         if html_result is not None:
-            return self.__parse_web_result(game_name, html_result)
+            return self.__parse_web_result(game_name, html_result, None, similarity_case_sensitive)
         else:
             return None
 
@@ -118,7 +122,8 @@ class HowLongToBeat:
     # Private utils functions
     # ------------------------------------------
 
-    def __parse_web_result(self, game_name: str, html_result, game_id: int = None):
+    def __parse_web_result(self, game_name: str, html_result, game_id=None,
+                           similarity_case_sensitive: bool = True):
         """
         Function that call the HTML parser to get the data
         @param game_name: The original game name received as input
@@ -127,10 +132,12 @@ class HowLongToBeat:
         @return: A list of possible games
         """
         if game_id is None:
-            parser = HTMLResultParser(game_name, HTMLRequests.GAME_URL, self.minimum_similarity, game_id)
+            parser = HTMLResultParser(game_name, HTMLRequests.GAME_URL, self.minimum_similarity, game_id,
+                                      similarity_case_sensitive)
         else:
             # If the search is by id, ignore class minimum_similarity and set it to 0.0
             # The result is filter by ID anyway, so the similarity shouldn't count too much
+            # Also ignore similarity_case_sensitive and leave default value
             parser = HTMLResultParser(game_name, HTMLRequests.GAME_URL, 0.0, game_id)
         parser.feed(html_result)
         return parser.results

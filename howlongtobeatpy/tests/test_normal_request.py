@@ -102,6 +102,19 @@ class TestNormalRequest(TestCase):
         self.assertNotEqual(None, results, "Search Results are None")
         self.assertEqual(2, len(results))
 
+    def test_game_case_sensitive(self):
+        results_standard = HowLongToBeat(0).search("RED HOT VENGEANCE")
+        results_not_case_sens = HowLongToBeat(0).search("RED HOT VENGEANCE",
+                                                        similarity_case_sensitive=False)
+        self.assertNotEqual(None, results_standard, "Search Results (standard) are None")
+        self.assertNotEqual(None, results_not_case_sens, "Search Results (_not_case_sens) are None")
+        self.assertNotEqual(0, len(results_standard))
+        self.assertNotEqual(0, len(results_not_case_sens))
+        best_element_standard = max(results_standard, key=lambda element: element.similarity)
+        best_element_not_case = max(results_not_case_sens, key=lambda element: element.similarity)
+        self.assertTrue(best_element_standard.similarity <= best_element_not_case.similarity,
+                        "Wrong similarity results")
+
     def test_no_real_game(self):
         results = HowLongToBeat().search("asfjklagls")
         self.assertEqual(0, len(results))

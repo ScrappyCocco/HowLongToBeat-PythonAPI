@@ -17,11 +17,13 @@ class HTMLResultParser(HTMLParser):
     """
 
     def __init__(self, input_game_name: str, input_game_url: str,
-                 input_minimum_similarity: float, input_game_id: int = None):
+                 input_minimum_similarity: float, input_game_id: int = None,
+                 input_similarity_case_sensitive: bool = True):
         super().__init__()
         # Init instance variables
         self.results = []
         self.minimum_similarity = input_minimum_similarity
+        self.similarity_case_sensitive = input_similarity_case_sensitive
         self.game_id = input_game_id
         self.base_game_url = input_game_url
         self.current_entry = None
@@ -80,7 +82,7 @@ class HTMLResultParser(HTMLParser):
             # Can be added
             # Calculate name similarity with original input name
             self.current_entry.similarity = self.similar(self.game_name, self.current_entry.game_name,
-                                                         self.game_name_numbers)
+                                                         self.game_name_numbers, self.similarity_case_sensitive)
             # If the minimum_similarity is 0 just add the result
             # Otherwise if the similarity is < minimum_similarity skipping adding it to results list
             if self.minimum_similarity == 0.0:
@@ -151,17 +153,22 @@ class HTMLResultParser(HTMLParser):
         return time_string[start_pos:].strip()
 
     @staticmethod
-    def similar(a, b, game_name_numbers):
+    def similar(a, b, game_name_numbers, similarity_case_sensitive):
         """
         This function calculate how much the first string is similar to the second string
         @param a: First String
         @param b: Second String
         @param game_name_numbers: All the numbers in <a> string, used for an additional check
+        @param similarity_case_sensitive: If the SequenceMatcher() should be case sensitive (true) or ignore case (false)
         @return: Return the similarity between the two string (0.0-1.0)
         """
         if a is None or b is None:
             return 0
-        similarity = SequenceMatcher(None, a, b).ratio()
+        # Check if we want a case sensitive compare or not
+        if similarity_case_sensitive:
+            similarity = SequenceMatcher(None, a, b).ratio()
+        else:
+            similarity = SequenceMatcher(None, a.lower(), b.lower()).ratio()
         if game_name_numbers is not None and len(game_name_numbers) > 0:  # additional check about numbers in the string
             number_found = False
             cleaned = re.sub(r'([^\s\w]|_)+', '', b)

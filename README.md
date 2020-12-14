@@ -101,22 +101,32 @@ This call will return an unique [HowLongToBeatEntry](https://github.com/ScrappyC
 
 ### DLC search
 Apparently in the default search DLCs don't appear (see: [#6](https://github.com/ScrappyCocco/HowLongToBeat-PythonAPI/issues/6)). An `enum` has been added:
+
 ```python
 SearchModifiers.NONE
 SearchModifiers.INCLUDE_DLC
 SearchModifiers.ISOLATE_DLC
 ```
+
 This optional parameter allow you to specify in the search if you want the default search (no DLCs), to INCLUDE DLCs along with games, or to ISOLATE DLCs (show only DLCs in the result).
 
 ### Results auto-filter
 To ignore games with a very different name, the standard search automatically filter results with a game name that has a similarity with the given name > than `0.4`, not adding the others to the result list.
 If you want all the results, or you want to change this value, you can put a parameter in the constructor:
+
 ```python
 results = HowLongToBeat(0.0).search("Awesome Game")
 ```
+
 putting `0.0` (or just `0`) will return all the found games, otherwise you can write another (`float`) number between 0...1 to set a new filter, such as `0.7`.
 
-**Remember** that, when searching by ID, this value is ignored.
+Also remember that by default the similarity check **is case-sensitive** between the name given and the name found, if you want to ignore the case you can use:
+
+```python
+results = HowLongToBeat(0.0).search("Awesome Game", similarity_case_sensitive=False)
+```
+
+**Remember** that, when searching by ID, the similarity value and the case sensitive bool are ignored.
 
 ### Reading an entry
 
