@@ -1,21 +1,25 @@
 # This workflows will upload a Python Package using Twine when a release is created
 # For more information see: https://help.github.com/en/actions/language-and-framework-guides/using-python-with-github-actions#publishing-to-package-registries
 
-name: Python Test & Upload
+name: Python Test
 
 on:
-  release:
-    types: [created]
+  push:
+    branches:
+      - master
   pull_request:
       types: [opened, synchronize, reopened]
 
 jobs:
-  deploy:
+  test:
 
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
+      with:
+        # Disabling shallow clone is recommended for improving relevancy of reporting
+        fetch-depth: 0
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
@@ -29,8 +33,21 @@ jobs:
       run: |
         nosetests howlongtobeatpy --with-coverage
         coverage xml
+    
+        
+  finish:
+    needs: test
+    
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        # Disabling shallow clone is recommended for improving relevancy of reporting
+        fetch-depth: 0
     - name: Upload Coverage codecov
       env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       run: |
         codecov
@@ -39,10 +56,3 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-    - name: Build and publish
-      env:
-        TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-      run: |
-        python setup.py sdist
-        twine upload dist/*
