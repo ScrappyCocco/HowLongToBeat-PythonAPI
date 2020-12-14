@@ -133,7 +133,7 @@ class HTMLResultParser(HTMLParser):
         """
         Function that return the number part from the string
         @param time_string: The original string with the time (ex. 50 Hours)
-        @return: the numeric part of that time (ex. 50 or 51½ , IS A STRING)
+        @return: the numeric part of that time (ex. 50 or 51 (and half) , IS A STRING)
         """
         if "-" in time_string:
             return -1
