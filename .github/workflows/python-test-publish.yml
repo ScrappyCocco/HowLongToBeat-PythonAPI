@@ -9,6 +9,8 @@ on:
       - master
   pull_request:
       types: [opened, synchronize, reopened]
+  release:
+    types: [created, edited]
 
 jobs:
   test:
@@ -33,9 +35,15 @@ jobs:
       run: |
         nosetests howlongtobeatpy --with-coverage
         coverage xml
+    - name: Upload Coverage codecov
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      run: |
+        codecov
     
         
-  finish:
+  SonarScan:
     needs: test
     
     runs-on: ubuntu-latest
@@ -45,12 +53,6 @@ jobs:
       with:
         # Disabling shallow clone is recommended for improving relevancy of reporting
         fetch-depth: 0
-    - name: Upload Coverage codecov
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      run: |
-        codecov
     - name: SonarCloud Scan
       uses: sonarsource/sonarcloud-github-action@master
       env:
