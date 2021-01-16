@@ -107,11 +107,15 @@ Apparently in the default search DLCs don't appear (see: [#6](https://github.com
 
 ```python
 SearchModifiers.NONE
-SearchModifiers.INCLUDE_DLC
+SearchModifiers.INCLUDE_DLC # Probably unnecessary
 SearchModifiers.ISOLATE_DLC
+SearchModifiers.HIDE_DLC
 ```
 
 This optional parameter allow you to specify in the search if you want the default search (no DLCs), to INCLUDE DLCs along with games, or to ISOLATE DLCs (show only DLCs in the result).
+
+**Update January 2020**: Apparently HowLongToBeat re-added DLCs in the default search, so `SearchModifiers.INCLUDE_DLC` should no longer be necessary. It will remain for completeness and compatibility.
+A new option has been added instead: `SearchModifiers.HIDE_DLC`, that is basically the opposite of including DLCs.
 
 ### Results auto-filter
 To ignore games with a very different name, the standard search automatically filter results with a game name that has a similarity with the given name > than `0.4`, not adding the others to the result list.

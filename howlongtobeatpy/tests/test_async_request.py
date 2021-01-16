@@ -67,6 +67,11 @@ class TestAsyncRequest(TestCase):
     @async_test
     async def test_game_default_dlc_search(self):
         results = await HowLongToBeat().async_search("Hearts of Stone")
+        self.assertEqual(1, len(results))
+
+    @async_test
+    async def test_game_hide_dlc_search(self):
+        results = await HowLongToBeat().async_search("Hearts of Stone", search_modifiers=SearchModifiers.HIDE_DLC)
         self.assertEqual(0, len(results))
 
     @async_test

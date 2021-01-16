@@ -83,6 +83,10 @@ class TestNormalRequest(TestCase):
 
     def test_game_default_dlc_search(self):
         results = HowLongToBeat().search("Hearts of Stone")
+        self.assertEqual(1, len(results))
+
+    def test_game_hide_dlc_search(self):
+        results = HowLongToBeat().search("Hearts of Stone", search_modifiers=SearchModifiers.HIDE_DLC)
         self.assertEqual(0, len(results))
 
     def test_game_include_dlc_search(self):

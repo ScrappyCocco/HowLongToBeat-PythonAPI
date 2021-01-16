@@ -12,8 +12,12 @@ from enum import Enum
 
 class SearchModifiers(Enum):
     NONE = ""
+    # INCLUDE_DLC is left, but should NO LONGER make a difference. HowLongToBeat re-added DLC in standard requests
     INCLUDE_DLC = "show_dlc"
+    # ISOLATE_DLC shows only DLC in the search result
     ISOLATE_DLC = "only_dlc"
+    # HIDE_DLC hide DLCs in the search result
+    HIDE_DLC = "hide_dlc"
 
 
 class HTMLRequests:
