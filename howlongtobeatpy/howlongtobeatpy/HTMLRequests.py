@@ -6,6 +6,7 @@ import requests
 import re
 import html
 from enum import Enum
+from fake_useragent import UserAgent
 
 
 # ---------------------------------------------------------------------
@@ -33,9 +34,11 @@ class HTMLRequests:
         @param search_modifiers: The "Modifiers" list in "Search Options", allow to show/isolate/hide DLCs
         @return: The HTML code of the research if the request returned 200(OK), None otherwise
         """
+        ua = UserAgent()
         headers = {
             'content-type': 'application/x-www-form-urlencoded',
-            'accept': '*/*'
+            'accept': '*/*',
+            'User-Agent': ua.random
         }
         payload = {
             'queryString': game_name,
@@ -63,9 +66,11 @@ class HTMLRequests:
         @param search_modifiers: The "Modifiers" list in "Search Options", allow to show/isolate/hide DLCs
         @return: The HTML code of the research if the request returned 200(OK), None otherwise
         """
+        ua = UserAgent()
         headers = {
             'content-type': 'application/x-www-form-urlencoded',
-            'accept': '*/*'
+            'accept': '*/*',
+            'User-Agent': ua.random
         }
         payload = {
             'queryString': game_name,
@@ -112,10 +117,15 @@ class HTMLRequests:
         @return: The game title from the given id
         """
 
+        ua = UserAgent()
+        headers = {
+            'User-Agent': ua.random
+        }
+
         url_get = HTMLRequests.GAME_URL + str(game_id)
 
         # Request and extract title
-        contents = requests.get(url_get)
+        contents = requests.get(url_get, headers=headers)
         return HTMLRequests.__cut_game_title(contents.text)
 
     @staticmethod
@@ -126,11 +136,16 @@ class HTMLRequests:
         @return: The game title from the given id
         """
 
+        ua = UserAgent()
+        headers = {
+            'User-Agent': ua.random
+        }
+
         url_get = HTMLRequests.GAME_URL + str(game_id)
 
         # Request and extract title
         async with aiohttp.ClientSession() as session:
-            async with session.post(url_get) as resp:
+            async with session.post(url_get, headers=headers) as resp:
                 if resp is not None and str(resp.status) == "200":
                     text = await resp.text()
                     return HTMLRequests.__cut_game_title(text)
