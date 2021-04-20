@@ -119,6 +119,22 @@ class TestNormalRequest(TestCase):
         self.assertTrue(best_element_standard.similarity <= best_element_not_case.similarity,
                         "Wrong similarity results")
 
+    def test_game_suffix_present(self):
+        results = HowLongToBeat(0).search("God Of War")
+        self.assertNotEqual(None, results, "Search Results are None")
+        self.assertNotEqual(0, len(results))
+        best_element = max(results, key=lambda element: element.similarity)
+        self.assertEqual("God of War".lower(), best_element.game_name.lower())
+        self.assertNotEqual(None, best_element.game_name_suffix, "The suffix is still None, it should not be")
+        self.assertEqual(best_element.game_name_suffix, "(2018)")
+
+    def test_game_suffix_not_present(self):
+        results = HowLongToBeat(0).search("The Witcher 3: Wild Hunt")
+        self.assertNotEqual(None, results, "Search Results are None")
+        self.assertNotEqual(0, len(results))
+        best_element = max(results, key=lambda element: element.similarity)
+        self.assertEqual(None, best_element.game_name_suffix, "The suffix is not None, it should be")
+
     def test_no_real_game(self):
         results = HowLongToBeat().search("asfjklagls")
         self.assertEqual(0, len(results))

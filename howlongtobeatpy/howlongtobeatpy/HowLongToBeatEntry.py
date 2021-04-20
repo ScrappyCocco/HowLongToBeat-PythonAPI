@@ -11,6 +11,7 @@ class HowLongToBeatEntry:
         # Base Game Details
         self.game_id = -1
         self.game_name = None
+        self.game_name_suffix = None
         self.game_image_url = None
         self.game_web_link = None
         # Gameplay Main

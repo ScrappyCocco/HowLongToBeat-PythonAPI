@@ -29,6 +29,7 @@ class HTMLResultParser(HTMLParser):
         self.current_entry = None
         self.li_encountered = False
         self.inside_a_div = False
+        self.inside_a_strong = False
         self.inside_a_title_link = False
         self.currently_reading = None
         self.game_name = None
@@ -51,6 +52,8 @@ class HTMLResultParser(HTMLParser):
                 self.current_entry = HowLongToBeatEntry()
 
         if self.li_encountered:  # If i already read the <li> tag i'm inside a game entry
+            if tag == "strong":
+                self.inside_a_strong = True
             if tag == "a":  # The <a> tag contain the game title and the game page id
                 for att in attrs:
                     if att[0] == "title":  # Read the current game title
@@ -72,6 +75,8 @@ class HTMLResultParser(HTMLParser):
     def handle_endtag(self, tag):
         if tag == "a" and self.inside_a_title_link:  # No longer in the <a> link with the game name
             self.inside_a_title_link = False
+        if tag == "strong" and self.inside_a_strong:
+            self.inside_a_strong = False
         if tag == "div":  # I save that i'm no longer inside a <div> element
             self.inside_a_div = False
         if tag == "li" and self.li_encountered:  # I finished reading the game entry
@@ -97,7 +102,9 @@ class HTMLResultParser(HTMLParser):
     # OVERRIDE from HTMLParser
     def handle_data(self, data):
         if self.inside_a_title_link and len(data.strip()) > 0:
-            self.current_entry.game_name = data.strip()
+            self.current_entry.game_name = data.strip()  # Save the title of the game
+        if self.inside_a_strong and len(data.strip()) > 0:
+            self.current_entry.game_name_suffix = data.strip()  # Save the suffix of the game
         if self.inside_a_div:
             # If i'm inside a <div> i must analyze all the possible times, saving title and then his value
             if data.lower().strip() == "main story" \

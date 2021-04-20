@@ -109,6 +109,24 @@ class TestAsyncRequest(TestCase):
                         "Wrong similarity results")
 
     @async_test
+    async def test_game_suffix_present(self):
+        results = await HowLongToBeat(0).async_search("God Of War")
+        self.assertNotEqual(None, results, "Search Results are None")
+        self.assertNotEqual(0, len(results))
+        best_element = max(results, key=lambda element: element.similarity)
+        self.assertEqual("God of War".lower(), best_element.game_name.lower())
+        self.assertNotEqual(None, best_element.game_name_suffix, "The suffix is still None, it should not be")
+        self.assertEqual(best_element.game_name_suffix, "(2018)")
+
+    @async_test
+    async def test_game_suffix_not_present(self):
+        results = await HowLongToBeat(0).async_search("The Witcher 3: Wild Hunt")
+        self.assertNotEqual(None, results, "Search Results are None")
+        self.assertNotEqual(0, len(results))
+        best_element = max(results, key=lambda element: element.similarity)
+        self.assertEqual(None, best_element.game_name_suffix, "The suffix is not None, it should be")
+
+    @async_test
     async def test_no_real_game(self):
         results = await HowLongToBeat().async_search("asfjklagls")
         self.assertEqual(0, len(results))
