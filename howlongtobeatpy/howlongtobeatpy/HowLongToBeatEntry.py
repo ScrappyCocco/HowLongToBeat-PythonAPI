@@ -1,10 +1,10 @@
 class HowLongToBeatEntry:
     """
     A simple class to collect all game data that are being read from the HTML code
-    The first value of each section contain the actual time (or -1/0 if not available
-    The second value of each section contain the unit of the time (Minutes/Hours, or None if not available
+    The first value of each section contain the actual time (or -1/0 if not available)
+    The second value of each section contain the unit of the time (Minutes/Hours, or None if not available)
     The third value of each section contains the label
-        (Can be Main Story/Main + Extras/Completionist/Single-Player/Solo/Co-Op/Vs.
+        (Can be Main Story/Main + Extras/Completionist/Single-Player/Solo/Co-Op/Vs.)
     """
 
     def __init__(self):
