@@ -28,3 +28,23 @@ class HowLongToBeatEntry:
         self.gameplay_completionist_label = None
         # Similarity with original name
         self.similarity = -1
+    def __repr__(self):
+        print("game_id:",self.game_id )
+        print("game_name:",self.game_name ) 
+        print("game_name_suffix:",self.game_name_suffix ) 
+        print("game_image_url:",self.game_image_url ) 
+        print("game_web_link:",self.game_web_link ) 
+        # Gameplay Main
+        print("gameplay_main:",self.gameplay_main ) 
+        print("gameplay_main_unit:",self.gameplay_main_unit ) 
+        print("gameplay_main_label:",self.gameplay_main_label ) 
+        # Gameplay Main + Extra
+        print("gameplay_main_extra:",self.gameplay_main_extra ) 
+        print("gameplay_main_extra_unit:",self.gameplay_main_extra_unit ) 
+        print("gameplay_main_extra_label:",self.gameplay_main_extra_label ) 
+        # Completionist
+        print("gameplay_completionist:",self.gameplay_completionist ) 
+        print("gameplay_completionist_unit:",self.gameplay_completionist_unit ) 
+        print("gameplay_completionist_label:",self.gameplay_completionist_label ) 
+        # Similarity with original name
+        print("similarity:",self.similarity)
