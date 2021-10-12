@@ -1,6 +1,6 @@
 # HowLongToBeat Python API
 [![Python Test](https://github.com/ScrappyCocco/HowLongToBeat-PythonAPI/actions/workflows/python-test.yml/badge.svg)](https://github.com/ScrappyCocco/HowLongToBeat-PythonAPI/actions/workflows/python-test.yml)
-![CodeQL](https://github.com/ScrappyCocco/HowLongToBeat-PythonAPI/workflows/CodeQL/badge.svg)
+[![CodeQL](https://github.com/ScrappyCocco/HowLongToBeat-PythonAPI/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/ScrappyCocco/HowLongToBeat-PythonAPI/actions/workflows/codeql-analysis.yml)
 
 [![codecov](https://codecov.io/gh/ScrappyCocco/HowLongToBeat-PythonAPI/branch/master/graph/badge.svg)](https://codecov.io/gh/ScrappyCocco/HowLongToBeat-PythonAPI)
 [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=ScrappyCocco_HowLongToBeat-PythonAPI&metric=bugs)](https://sonarcloud.io/dashboard?id=ScrappyCocco_HowLongToBeat-PythonAPI)
@@ -132,15 +132,17 @@ Also remember that by default the similarity check **is case-sensitive** between
 results = HowLongToBeat(0.0).search("Awesome Game", similarity_case_sensitive=False)
 ```
 
-**Remember** that, when searching by ID, the similarity value and the case sensitive bool are ignored.
+**Remember** that, when searching by ID, the similarity value and the case-sensitive bool are ignored.
 
 ### Reading an entry
 
 An entry is made of few values, you can check them [in the Entry class file](https://github.com/ScrappyCocco/HowLongToBeat-PythonAPI/blob/master/howlongtobeatpy/howlongtobeatpy/HowLongToBeatEntry.py)
 
-## Found a bug?
+## Issues, Questions & Discussions
 
-Please report it as soon as you can creating an [issue](https://github.com/ScrappyCocco/HowLongToBeat-PythonAPI/issues/new), the code may not be perfect.
+If you found a bug report it as soon as you can creating an [issue](https://github.com/ScrappyCocco/HowLongToBeat-PythonAPI/issues/new), the code may not be perfect.
+
+If you need any new feature, or want to discuss the current implementation/features, consider opening a [discussion](https://github.com/ScrappyCocco/HowLongToBeat-PythonAPI/discussions).
 
 ## Authors
 
