@@ -14,6 +14,15 @@ on:
     types: [created, edited]
   schedule:
     - cron: '30 8 * * 1'
+  discussion:
+    types: [created, edited, pinned]
+  discussion_comment:
+    types: [created, edited]
+  issues:
+    types: [opened, edited, reopened, closed]
+  issue_comment:
+    types: [created, edited]
+  workflow_dispatch:
 
 jobs:
   test:

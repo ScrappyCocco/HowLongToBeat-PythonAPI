@@ -15,10 +15,22 @@ on:
   push:
     branches: [ master ]
   pull_request:
+    types: [opened, reopened]
     # The branches below must be a subset of the branches above
     branches: [ master ]
+  release:
+    types: [created, edited]
   schedule:
     - cron: '24 8 * * 3'
+  discussion:
+    types: [created, edited, pinned]
+  discussion_comment:
+    types: [created, edited]
+  issues:
+    types: [opened, edited, reopened, closed]
+  issue_comment:
+    types: [created, edited]
+  workflow_dispatch:
 
 jobs:
   analyze:
