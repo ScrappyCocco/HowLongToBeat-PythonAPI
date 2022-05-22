@@ -47,10 +47,10 @@ class TestNormalRequest(TestCase):
         self.assertEqual("Half-Life: Opposing Force", best_result.game_name)
 
     def test_game_name(self):
-        results = HowLongToBeat().search("A way out")
+        results = HowLongToBeat().search("Crysis Warhead")
         self.assertNotEqual(None, results, "Search Results are None")
         best_result = self.getMaxSimilarityElement(results)
-        self.assertEqual("A Way Out", best_result.game_name)
+        self.assertEqual("Crysis Warhead", best_result.game_name)
         self.assertEqual("Main Story", best_result.gameplay_main_label)
         self.assertEqual("Main + Extra", best_result.gameplay_main_extra_label)
         self.assertEqual("Completionist", best_result.gameplay_completionist_label)
@@ -73,13 +73,13 @@ class TestNormalRequest(TestCase):
         self.assertEqual("Battlefield 2142", best_result.game_name)
         self.assertEqual(None, best_result.gameplay_main_label)
         self.assertEqual("Co-Op", best_result.gameplay_main_extra_label)
+        self.assertEqual("Hours", best_result.gameplay_main_extra_unit)
+        self.assertAlmostEqual(17, TestNormalRequest.getSimpleNumber(best_result.gameplay_main_extra), delta=5)
         self.assertEqual("Vs.", best_result.gameplay_completionist_label)
-        self.assertAlmostEqual(80, TestNormalRequest.getSimpleNumber(best_result.gameplay_completionist), delta=5)
+        self.assertAlmostEqual(65, TestNormalRequest.getSimpleNumber(best_result.gameplay_completionist), delta=5)
         self.assertEqual("Hours", best_result.gameplay_completionist_unit)
         self.assertEqual(None, best_result.gameplay_main_unit)
-        self.assertEqual(None, best_result.gameplay_main_extra_unit)
         self.assertEqual(-1, TestNormalRequest.getSimpleNumber(best_result.gameplay_main))
-        self.assertEqual(-1, TestNormalRequest.getSimpleNumber(best_result.gameplay_main_extra))
 
     def test_game_default_dlc_search(self):
         results = HowLongToBeat().search("Hearts of Stone")
@@ -102,9 +102,9 @@ class TestNormalRequest(TestCase):
         self.assertEqual("The Witcher 3: Wild Hunt - Hearts of Stone", best_result.game_name)
 
     def test_game_really_isolate_dlc_search(self):
-        results = HowLongToBeat().search("The Witcher 3", SearchModifiers.ISOLATE_DLC)
+        results = HowLongToBeat(0).search("Skyrim", SearchModifiers.ISOLATE_DLC)
         self.assertNotEqual(None, results, "Search Results are None")
-        self.assertEqual(2, len(results))
+        self.assertEqual(3, len(results))
 
     def test_game_case_sensitive(self):
         results_standard = HowLongToBeat(0).search("RED HOT VENGEANCE")

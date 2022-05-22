@@ -20,9 +20,9 @@ class TestNormalRequestById(TestCase):
         self.assertEqual("Half-Life: Opposing Force", result.game_name)
 
     def test_game_name(self):
-        result = HowLongToBeat().search_from_id(46386)
+        result = HowLongToBeat().search_from_id(2071)
         self.assertNotEqual(None, result, "Search Result is None")
-        self.assertEqual("A Way Out", result.game_name)
+        self.assertEqual("Crysis Warhead", result.game_name)
         self.assertEqual("Main Story", result.gameplay_main_label)
         self.assertEqual("Main + Extra", result.gameplay_main_extra_label)
         self.assertEqual("Completionist", result.gameplay_completionist_label)
@@ -43,13 +43,13 @@ class TestNormalRequestById(TestCase):
         self.assertEqual("Battlefield 2142", result.game_name)
         self.assertEqual(None, result.gameplay_main_label)
         self.assertEqual("Co-Op", result.gameplay_main_extra_label)
+        self.assertEqual("Hours", result.gameplay_main_extra_unit)
+        self.assertAlmostEqual(17, TestNormalRequest.getSimpleNumber(result.gameplay_main_extra), delta=5)
         self.assertEqual("Vs.", result.gameplay_completionist_label)
-        self.assertAlmostEqual(80, TestNormalRequest.getSimpleNumber(result.gameplay_completionist), delta=5)
+        self.assertAlmostEqual(65, TestNormalRequest.getSimpleNumber(result.gameplay_completionist), delta=5)
         self.assertEqual("Hours", result.gameplay_completionist_unit)
         self.assertEqual(None, result.gameplay_main_unit)
-        self.assertEqual(None, result.gameplay_main_extra_unit)
         self.assertEqual(-1, TestNormalRequest.getSimpleNumber(result.gameplay_main))
-        self.assertEqual(-1, TestNormalRequest.getSimpleNumber(result.gameplay_main_extra))
 
     def test_no_real_game(self):
         result = HowLongToBeat().search_from_id(123)
