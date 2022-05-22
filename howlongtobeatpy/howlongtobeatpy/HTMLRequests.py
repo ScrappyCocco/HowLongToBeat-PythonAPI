@@ -23,22 +23,28 @@ class SearchModifiers(Enum):
 
 class HTMLRequests:
     BASE_URL = 'https://howlongtobeat.com/'
-    SEARCH_URL = BASE_URL + "search_results.php"
-    GAME_URL = BASE_URL + "game.php?id="
+    SEARCH_URL = BASE_URL + "search_results"
+    GAME_URL = BASE_URL + "game?id="
 
     @staticmethod
-    def send_web_request(game_name: str, search_modifiers: SearchModifiers = SearchModifiers.NONE):
+    def send_web_request(game_name: str, search_modifiers: SearchModifiers = SearchModifiers.NONE, page: int = 1):
         """
         Function that search the game using a normal request
         @param game_name: The original game name received as input
         @param search_modifiers: The "Modifiers" list in "Search Options", allow to show/isolate/hide DLCs
+        @param page: The page to explore of the research, unknown if this is actually used
         @return: The HTML code of the research if the request returned 200(OK), None otherwise
         """
         ua = UserAgent()
+        params = {
+            'page': str(page)
+        }
         headers = {
             'content-type': 'application/x-www-form-urlencoded',
             'accept': '*/*',
-            'User-Agent': ua.random
+            'User-Agent': ua.random,
+            'origin': 'https://howlongtobeat.com',
+            'referer': 'https://howlongtobeat.com/'
         }
         payload = {
             'queryString': game_name,
@@ -49,28 +55,38 @@ class HTMLRequests:
             'length_type': 'main',
             'length_min': '',
             'length_max': '',
-            'detail': search_modifiers.value
+            'detail': search_modifiers.value,
+            'v': '',
+            'f': '',
+            'g': '',
+            'randomize': '0'
         }
         # Make the post request and return the result if is valid
-        r = requests.post(HTMLRequests.SEARCH_URL, data=payload, headers=headers)
-        if r is not None and r.status_code == 200:
-            return r.text
+        resp = requests.post(HTMLRequests.SEARCH_URL, params=params, headers=headers, data=payload)
+        if resp is not None and resp.status_code == 200:
+            return resp.text
         else:
             return None
 
     @staticmethod
-    async def send_async_web_request(game_name: str, search_modifiers: SearchModifiers = SearchModifiers.NONE):
+    async def send_async_web_request(game_name: str, search_modifiers: SearchModifiers = SearchModifiers.NONE, page: int = 1):
         """
         Function that search the game using an async request
         @param game_name: The original game name received as input
         @param search_modifiers: The "Modifiers" list in "Search Options", allow to show/isolate/hide DLCs
+        @param page: The page to explore of the research, unknown if this is actually used
         @return: The HTML code of the research if the request returned 200(OK), None otherwise
         """
         ua = UserAgent()
+        params = {
+            'page': str(page)
+        }
         headers = {
             'content-type': 'application/x-www-form-urlencoded',
             'accept': '*/*',
-            'User-Agent': ua.random
+            'User-Agent': ua.random,
+            'origin': 'https://howlongtobeat.com',
+            'referer': 'https://howlongtobeat.com/'
         }
         payload = {
             'queryString': game_name,
@@ -81,11 +97,15 @@ class HTMLRequests:
             'length_type': 'main',
             'length_min': '',
             'length_max': '',
-            'detail': search_modifiers.value
+            'detail': search_modifiers.value,
+            'v': '',
+            'f': '',
+            'g': '',
+            'randomize': '0'
         }
         # Make the post request and return the result if is valid
         async with aiohttp.ClientSession() as session:
-            async with session.post(HTMLRequests.SEARCH_URL, data=payload, headers=headers) as resp:
+            async with session.post(HTMLRequests.SEARCH_URL, params=params, headers=headers, data=payload) as resp:
                 if resp is not None and str(resp.status) == "200":
                     return await resp.text()
                 else:
@@ -118,14 +138,16 @@ class HTMLRequests:
         """
 
         ua = UserAgent()
+        params = {
+            'id': str(game_id)
+        }
         headers = {
-            'User-Agent': ua.random
+            'User-Agent': ua.random,
+            'referer': 'https://howlongtobeat.com/'
         }
 
-        url_get = HTMLRequests.GAME_URL + str(game_id)
-
         # Request and extract title
-        contents = requests.get(url_get, headers=headers)
+        contents = requests.get(HTMLRequests.GAME_URL, params=params, headers=headers)
         return HTMLRequests.__cut_game_title(contents.text)
 
     @staticmethod
@@ -137,15 +159,17 @@ class HTMLRequests:
         """
 
         ua = UserAgent()
-        headers = {
-            'User-Agent': ua.random
+        params = {
+            'id': str(game_id)
         }
-
-        url_get = HTMLRequests.GAME_URL + str(game_id)
+        headers = {
+            'User-Agent': ua.random,
+            'referer': 'https://howlongtobeat.com/'
+        }
 
         # Request and extract title
         async with aiohttp.ClientSession() as session:
-            async with session.post(url_get, headers=headers) as resp:
+            async with session.post(HTMLRequests.GAME_URL, params=params, headers=headers) as resp:
                 if resp is not None and str(resp.status) == "200":
                     text = await resp.text()
                     return HTMLRequests.__cut_game_title(text)
