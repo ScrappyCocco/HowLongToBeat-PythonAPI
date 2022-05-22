@@ -23,6 +23,8 @@ class SearchModifiers(Enum):
 
 class HTMLRequests:
     BASE_URL = 'https://howlongtobeat.com/'
+    ORIGIN_HEADER = 'https://howlongtobeat.com'
+    REFERER_HEADER = BASE_URL
     SEARCH_URL = BASE_URL + "search_results"
     GAME_URL = BASE_URL + "game?id="
 
@@ -43,8 +45,8 @@ class HTMLRequests:
             'content-type': 'application/x-www-form-urlencoded',
             'accept': '*/*',
             'User-Agent': ua.random,
-            'origin': 'https://howlongtobeat.com',
-            'referer': 'https://howlongtobeat.com/'
+            'origin': HTMLRequests.ORIGIN_HEADER,
+            'referer': HTMLRequests.REFERER_HEADER
         }
         payload = {
             'queryString': game_name,
@@ -63,7 +65,7 @@ class HTMLRequests:
         }
         # Make the post request and return the result if is valid
         resp = requests.post(HTMLRequests.SEARCH_URL, params=params, headers=headers, data=payload)
-        if resp is not None and resp.status_code == 200:
+        if resp.status_code == 200:
             return resp.text
         else:
             return None
@@ -85,8 +87,8 @@ class HTMLRequests:
             'content-type': 'application/x-www-form-urlencoded',
             'accept': '*/*',
             'User-Agent': ua.random,
-            'origin': 'https://howlongtobeat.com',
-            'referer': 'https://howlongtobeat.com/'
+            'origin': HTMLRequests.ORIGIN_HEADER,
+            'referer': HTMLRequests.REFERER_HEADER
         }
         payload = {
             'queryString': game_name,
@@ -124,7 +126,7 @@ class HTMLRequests:
         if game_title is None or len(game_title) == 0:
             return None
 
-        title = re.search("<title>([\w\W]*)<\/title>", game_title)
+        title = re.search("<title>(.*)<\/title>", game_title)
         # The position of start and end of this method may change if the website change
         cut_title = str(html.unescape(title.group(1)[12:-17]))
         return cut_title
@@ -143,7 +145,7 @@ class HTMLRequests:
         }
         headers = {
             'User-Agent': ua.random,
-            'referer': 'https://howlongtobeat.com/'
+            'referer': HTMLRequests.REFERER_HEADER
         }
 
         # Request and extract title
@@ -164,7 +166,7 @@ class HTMLRequests:
         }
         headers = {
             'User-Agent': ua.random,
-            'referer': 'https://howlongtobeat.com/'
+            'referer': HTMLRequests.REFERER_HEADER
         }
 
         # Request and extract title
