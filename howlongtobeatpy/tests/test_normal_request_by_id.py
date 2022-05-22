@@ -51,6 +51,12 @@ class TestNormalRequestById(TestCase):
         self.assertEqual(None, result.gameplay_main_unit)
         self.assertEqual(-1, TestNormalRequest.getSimpleNumber(result.gameplay_main))
 
+    def test_game_link(self):
+        result = HowLongToBeat().search_from_id(936)
+        self.assertNotEqual(None, result, "Search Result is None")
+        self.assertEqual("Battlefield 2142", result.game_name)
+        self.assertEqual("https://howlongtobeat.com/game?id=936", result.game_web_link)
+
     def test_no_real_game(self):
         result = HowLongToBeat().search_from_id(123)
         self.assertEqual(None, result)

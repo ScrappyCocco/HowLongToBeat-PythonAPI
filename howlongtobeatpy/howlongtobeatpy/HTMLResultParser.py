@@ -61,7 +61,7 @@ class HTMLResultParser(HTMLParser):
                     if att[0] == "href":  # Get the game id from the link
                         start_pos = att[1].find('=') + 1
                         self.current_entry.game_id = att[1][start_pos:]
-                        self.current_entry.game_web_link = self.base_game_url + str(self.current_entry.game_id)
+                        self.current_entry.game_web_link = self.base_game_url + "?id=" + str(self.current_entry.game_id)
 
             if tag == "img":  # The tag <img> contains the img link for the game
                 for att in attrs:

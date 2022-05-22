@@ -65,6 +65,15 @@ class TestAsyncRequest(TestCase):
         self.assertEqual(-1, TestNormalRequest.getSimpleNumber(best_result.gameplay_main))
 
     @async_test
+    async def test_game_link(self):
+        results = await HowLongToBeat().async_search("Battlefield 2142")
+        self.assertNotEqual(None, results, "Search Results are None")
+        best_result = TestNormalRequest.getMaxSimilarityElement(results)
+        self.assertNotEqual(None, best_result, "Search Result is None")
+        self.assertEqual("Battlefield 2142", best_result.game_name)
+        self.assertEqual("https://howlongtobeat.com/game?id=936", best_result.game_web_link)
+
+    @async_test
     async def test_game_default_dlc_search(self):
         results = await HowLongToBeat().async_search("Hearts of Stone")
         self.assertEqual(1, len(results))

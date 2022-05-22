@@ -58,6 +58,13 @@ class TestAsyncRequestById(TestCase):
         self.assertEqual(-1, TestNormalRequest.getSimpleNumber(result.gameplay_main))
 
     @async_test
+    async def test_game_link(self):
+        result = await HowLongToBeat().async_search_from_id(936)
+        self.assertNotEqual(None, result, "Search Result is None")
+        self.assertEqual("Battlefield 2142", result.game_name)
+        self.assertEqual("https://howlongtobeat.com/game?id=936", result.game_web_link)
+
+    @async_test
     async def test_no_real_game(self):
         result = await HowLongToBeat().async_search_from_id(123)
         self.assertEqual(None, result)
