@@ -28,10 +28,10 @@ class TestAsyncRequest(TestCase):
 
     @async_test
     async def test_game_name(self):
-        results = await HowLongToBeat().async_search("A way out")
+        results = await HowLongToBeat().async_search("Crysis Warhead")
         self.assertNotEqual(None, results, "Search Results are None")
         best_result = TestNormalRequest.getMaxSimilarityElement(results)
-        self.assertEqual("A Way Out", best_result.game_name)
+        self.assertEqual("Crysis Warhead", best_result.game_name)
         self.assertEqual("Main Story", best_result.gameplay_main_label)
         self.assertEqual("Main + Extra", best_result.gameplay_main_extra_label)
         self.assertEqual("Completionist", best_result.gameplay_completionist_label)
@@ -56,13 +56,13 @@ class TestAsyncRequest(TestCase):
         self.assertEqual("Battlefield 2142", best_result.game_name)
         self.assertEqual(None, best_result.gameplay_main_label)
         self.assertEqual("Co-Op", best_result.gameplay_main_extra_label)
+        self.assertEqual("Hours", best_result.gameplay_main_extra_unit)
+        self.assertAlmostEqual(17, TestNormalRequest.getSimpleNumber(best_result.gameplay_main_extra), delta=5)
         self.assertEqual("Vs.", best_result.gameplay_completionist_label)
-        self.assertAlmostEqual(80, TestNormalRequest.getSimpleNumber(best_result.gameplay_completionist), delta=5)
+        self.assertAlmostEqual(65, TestNormalRequest.getSimpleNumber(best_result.gameplay_completionist), delta=5)
         self.assertEqual("Hours", best_result.gameplay_completionist_unit)
         self.assertEqual(None, best_result.gameplay_main_unit)
-        self.assertEqual(None, best_result.gameplay_main_extra_unit)
         self.assertEqual(-1, TestNormalRequest.getSimpleNumber(best_result.gameplay_main))
-        self.assertEqual(-1, TestNormalRequest.getSimpleNumber(best_result.gameplay_main_extra))
 
     @async_test
     async def test_game_default_dlc_search(self):
@@ -90,9 +90,9 @@ class TestAsyncRequest(TestCase):
 
     @async_test
     async def test_game_really_isolate_dlc_search(self):
-        results = await HowLongToBeat().async_search("The Witcher 3", SearchModifiers.ISOLATE_DLC)
+        results = await HowLongToBeat(0).async_search("Skyrim", SearchModifiers.ISOLATE_DLC)
         self.assertNotEqual(None, results, "Search Results are None")
-        self.assertEqual(2, len(results))
+        self.assertEqual(3, len(results))
 
     @async_test
     async def test_game_case_sensitive(self):
