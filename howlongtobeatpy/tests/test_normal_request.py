@@ -35,10 +35,7 @@ class TestNormalRequest(TestCase):
         self.assertNotEqual(None, results, "Search Results are None")
         best_result = self.getMaxSimilarityElement(results)
         self.assertEqual("Celeste", best_result.game_name)
-        self.assertEqual("Main Story", best_result.gameplay_main_label)
-        self.assertEqual("Main + Extra", best_result.gameplay_main_extra_label)
-        self.assertEqual("Completionist", best_result.gameplay_completionist_label)
-        self.assertAlmostEqual(12, self.getSimpleNumber(best_result.gameplay_main_extra), delta=5)
+        self.assertAlmostEqual(12, self.getSimpleNumber(best_result.main_extra), delta=5)
 
     def test_game_name_with_colon(self):
         results = HowLongToBeat().search("Half-Life: Opposing Force")
