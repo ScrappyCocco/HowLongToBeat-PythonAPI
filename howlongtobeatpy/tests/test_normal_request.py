@@ -9,8 +9,7 @@ class TestNormalRequest(TestCase):
     def getMaxSimilarityElement(list_of_results):
         if list_of_results is not None and len(list_of_results) > 0:
             return max(list_of_results, key=lambda element: element.similarity)
-        else:
-            return None
+        return None
 
     @staticmethod
     def getSimpleNumber(time_string):
@@ -20,8 +19,7 @@ class TestNormalRequest(TestCase):
             return time_string
         if not time_string.isdigit():
             return int(time_string.strip().replace("½", " "))
-        else:
-            return int(time_string)
+        return int(time_string)
 
     def test_simple_similarity_value(self):
         results_all = HowLongToBeat(0.0).search("Grip")
@@ -43,48 +41,39 @@ class TestNormalRequest(TestCase):
         best_result = self.getMaxSimilarityElement(results)
         self.assertEqual("Half-Life: Opposing Force", best_result.game_name)
 
-    def test_game_name(self):
+    def test_game_name_and_dev(self):
         results = HowLongToBeat().search("Crysis Warhead")
         self.assertNotEqual(None, results, "Search Results are None")
         best_result = self.getMaxSimilarityElement(results)
         self.assertEqual("Crysis Warhead", best_result.game_name)
-        self.assertEqual("Main Story", best_result.gameplay_main_label)
-        self.assertEqual("Main + Extra", best_result.gameplay_main_extra_label)
-        self.assertEqual("Completionist", best_result.gameplay_completionist_label)
-        self.assertAlmostEqual(7, self.getSimpleNumber(best_result.gameplay_completionist), delta=3)
+        self.assertEqual("Crytek Budapest", best_result.profile_dev)
+        self.assertEqual("2008", str(best_result.release_world))
+        self.assertAlmostEqual(7, self.getSimpleNumber(best_result.completionist), delta=3)
 
     def test_game_name_with_numbers(self):
         results = HowLongToBeat().search("The Witcher 3")
         self.assertNotEqual(None, results, "Search Results are None")
         best_result = self.getMaxSimilarityElement(results)
         self.assertEqual("The Witcher 3: Wild Hunt", best_result.game_name)
-        self.assertEqual("Main Story", best_result.gameplay_main_label)
-        self.assertEqual("Main + Extra", best_result.gameplay_main_extra_label)
-        self.assertEqual("Completionist", best_result.gameplay_completionist_label)
-        self.assertAlmostEqual(50, self.getSimpleNumber(best_result.gameplay_main), delta=5)
+        self.assertAlmostEqual(50, self.getSimpleNumber(best_result.main_story), delta=5)
 
-    def test_game_with_no_all_values(self):
+    def test_game_with_values(self):
         results = HowLongToBeat().search("Battlefield 2142")
         self.assertNotEqual(None, results, "Search Results are None")
         best_result = TestNormalRequest.getMaxSimilarityElement(results)
         self.assertEqual("Battlefield 2142", best_result.game_name)
-        self.assertEqual(None, best_result.gameplay_main_label)
-        self.assertEqual("Co-Op", best_result.gameplay_main_extra_label)
-        self.assertEqual("Hours", best_result.gameplay_main_extra_unit)
-        self.assertAlmostEqual(17, TestNormalRequest.getSimpleNumber(best_result.gameplay_main_extra), delta=5)
-        self.assertEqual("Vs.", best_result.gameplay_completionist_label)
-        self.assertAlmostEqual(65, TestNormalRequest.getSimpleNumber(best_result.gameplay_completionist), delta=5)
-        self.assertEqual("Hours", best_result.gameplay_completionist_unit)
-        self.assertEqual(None, best_result.gameplay_main_unit)
-        self.assertEqual(-1, TestNormalRequest.getSimpleNumber(best_result.gameplay_main))
+        self.assertAlmostEqual(14, TestNormalRequest.getSimpleNumber(best_result.main_story), delta=5)
+        self.assertAlmostEqual(17, TestNormalRequest.getSimpleNumber(best_result.main_extra), delta=5)
+        self.assertAlmostEqual(30, TestNormalRequest.getSimpleNumber(best_result.completionist), delta=5)
 
-    def test_game_link(self):
+    def test_game_links(self):
         results = HowLongToBeat().search("Battlefield 2142")
         self.assertNotEqual(None, results, "Search Results are None")
         best_result = TestNormalRequest.getMaxSimilarityElement(results)
         self.assertNotEqual(None, best_result, "Search Result is None")
         self.assertEqual("Battlefield 2142", best_result.game_name)
-        self.assertEqual("https://howlongtobeat.com/game?id=936", best_result.game_web_link)
+        self.assertEqual("https://howlongtobeat.com/game/936", best_result.game_web_link)
+        self.assertTrue("howlongtobeat.com/games/256px-Battlefield_2142_box_art.jpg" in best_result.game_image_url)
 
     def test_game_default_dlc_search(self):
         results = HowLongToBeat().search("Hearts of Stone")
@@ -124,21 +113,21 @@ class TestNormalRequest(TestCase):
         self.assertTrue(best_element_standard.similarity <= best_element_not_case.similarity,
                         "Wrong similarity results")
 
-    def test_game_suffix_present(self):
+    def test_game_alias_present(self):
         results = HowLongToBeat(0).search("God Of War")
         self.assertNotEqual(None, results, "Search Results are None")
         self.assertNotEqual(0, len(results))
         best_element = max(results, key=lambda element: element.similarity)
         self.assertEqual("God of War".lower(), best_element.game_name.lower())
-        self.assertNotEqual(None, best_element.game_name_suffix, "The suffix is still None, it should not be")
-        self.assertEqual(best_element.game_name_suffix, "(2018)")
+        self.assertNotEqual(None, best_element.game_alias, "The suffix is still None, it should not be")
+        self.assertEqual(best_element.game_alias, "God of War (PS4)")
 
-    def test_game_suffix_not_present(self):
+    def test_game_alias_not_present(self):
         results = HowLongToBeat(0).search("The Witcher 3: Wild Hunt")
         self.assertNotEqual(None, results, "Search Results are None")
         self.assertNotEqual(0, len(results))
         best_element = max(results, key=lambda element: element.similarity)
-        self.assertEqual(None, best_element.game_name_suffix, "The suffix is not None, it should be")
+        self.assertEqual(0, len(best_element.game_alias), "The suffix is not None, it should be")
 
     def test_no_real_game(self):
         results = HowLongToBeat().search("asfjklagls")

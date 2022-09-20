@@ -58,20 +58,22 @@ class HTMLRequests:
             'searchPage': page,
             'size': 20,
             'searchOptions': {
-                'userId': 0,
-                'platform': "",
-                'sortCategory': "popular",
-                'rangeCategory': "main",
-                'rangeTime': {
-                    'min': 0,
-                    'max': 0
+                'games': {
+                    'userId': 0,
+                    'platform': "",
+                    'sortCategory': "popular",
+                    'rangeCategory': "main",
+                    'rangeTime': {
+                        'min': 0,
+                        'max': 0
+                    },
+                    'gameplay': {
+                        'perspective': "",
+                        'flow': "",
+                        'genre': ""
+                    },
+                    'modifier': search_modifiers.value,
                 },
-                'gameplay': {
-                    'perspective': "",
-                    'flow': "",
-                    'genre': ""
-                },
-                'modifier': search_modifiers.value,
                 'users': {
                     'sortCategory': "postcount"
                 },
