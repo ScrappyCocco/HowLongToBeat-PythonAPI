@@ -1,6 +1,6 @@
 # This workflows will test the released version of the API
 
-name: Python Test
+name: Python Test Released Published Version
 
 on:
   release:

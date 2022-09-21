@@ -1,6 +1,6 @@
 # This workflows will test the dev version of the API when pushed on github
 
-name: Python Test
+name: Python Test Github Dev Version
 
 on:
   [push, pull_request, discussion, issues]
