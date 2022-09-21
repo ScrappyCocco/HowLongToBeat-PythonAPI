@@ -24,8 +24,6 @@ class HowLongToBeat:
         """
         self.minimum_similarity = input_minimum_similarity
 
-    # body of the constructor
-
     # ------------------------------------------
     # (Standard) Search functions using game name
     # ------------------------------------------
@@ -70,7 +68,6 @@ class HowLongToBeat:
         """
         Function that search the game using an async request
         To re-use code, I extract the game name and search game by name, picking only the game with the same id
-        Otherwise a new parser is necessary, and is probably not worth to maintain 2 different html parsers
         Remember that this function use 2 requests: one to get the game title and one to get game data
         @param game_id: The game id to get data
         @return: The game data (single HowLongToBeatEntry object) or None in case of error
@@ -91,7 +88,6 @@ class HowLongToBeat:
     def search_from_id(self, game_id: int):
         """
         To re-use code, I extract the game name and search game by name, picking only the game with the same id
-        Otherwise a new parser is necessary, and is probably not worth to maintain 2 different html parsers
         Remember that this function use 2 requests: one to get the game title and one to get game data
         @param game_id: The game id to get data
         @return: The game data (single HowLongToBeatEntry object) None in case of error

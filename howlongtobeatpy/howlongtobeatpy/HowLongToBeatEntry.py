@@ -26,7 +26,8 @@ class HowLongToBeatEntry:
         self.profile_platforms = None
         # Should contain the release year
         self.release_world = None
-        # Similarity with original name, is the max similarity with game_name and game_alias
+        # Similarity between this entry game name and the searched string
+        # Calculated as the max similarity between the searched string and game_name & game_alias
         self.similarity = -1
         # JSON Fields
         # Full JSON response
