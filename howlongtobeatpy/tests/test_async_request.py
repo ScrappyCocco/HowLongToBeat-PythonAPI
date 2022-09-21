@@ -73,7 +73,7 @@ class TestAsyncRequest(TestCase):
 
     @async_test
     async def test_game_include_dlc_search(self):
-        results = await HowLongToBeat().async_search("Hearts of Stone", SearchModifiers.INCLUDE_DLC)
+        results = await HowLongToBeat().async_search("Hearts of Stone")
         self.assertNotEqual(None, results, "Search Results are None")
         best_result = TestNormalRequest.getMaxSimilarityElement(results)
         self.assertEqual("The Witcher 3: Wild Hunt - Hearts of Stone", best_result.game_name)

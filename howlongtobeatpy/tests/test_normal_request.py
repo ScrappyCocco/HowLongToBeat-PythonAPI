@@ -84,7 +84,7 @@ class TestNormalRequest(TestCase):
         self.assertEqual(0, len(results))
 
     def test_game_include_dlc_search(self):
-        results = HowLongToBeat().search("Hearts of Stone", SearchModifiers.INCLUDE_DLC)
+        results = HowLongToBeat().search("Hearts of Stone")
         self.assertNotEqual(None, results, "Search Results are None")
         best_result = TestNormalRequest.getMaxSimilarityElement(results)
         self.assertEqual("The Witcher 3: Wild Hunt - Hearts of Stone", best_result.game_name)
