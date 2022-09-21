@@ -9,10 +9,6 @@ howlongtobeatpy/howlongtobeatpy/__pycache__/
 
 howlongtobeatpy/howlongtobeatpy\.egg-info/
 
-howlongtobeatpy/LICENSE\.md
-
-howlongtobeatpy/README\.md
-
 \.scannerwork/
 
 howlongtobeatpy/tests/test_normal_request_debug\.py

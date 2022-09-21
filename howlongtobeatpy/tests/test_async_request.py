@@ -14,10 +14,7 @@ class TestAsyncRequest(TestCase):
         self.assertNotEqual(None, results, "Search Results are None")
         best_result = TestNormalRequest.getMaxSimilarityElement(results)
         self.assertEqual("Celeste", best_result.game_name)
-        self.assertEqual("Main Story", best_result.gameplay_main_label)
-        self.assertEqual("Main + Extra", best_result.gameplay_main_extra_label)
-        self.assertEqual("Completionist", best_result.gameplay_completionist_label)
-        self.assertAlmostEqual(12, TestNormalRequest.getSimpleNumber(best_result.gameplay_main_extra), delta=5)
+        self.assertAlmostEqual(12, TestNormalRequest.getSimpleNumber(best_result.main_extra), delta=5)
 
     @async_test
     async def test_game_name_with_colon(self):
@@ -27,15 +24,14 @@ class TestAsyncRequest(TestCase):
         self.assertEqual("Half-Life: Opposing Force", best_result.game_name)
 
     @async_test
-    async def test_game_name(self):
+    async def test_game_name_and_dev(self):
         results = await HowLongToBeat().async_search("Crysis Warhead")
         self.assertNotEqual(None, results, "Search Results are None")
         best_result = TestNormalRequest.getMaxSimilarityElement(results)
         self.assertEqual("Crysis Warhead", best_result.game_name)
-        self.assertEqual("Main Story", best_result.gameplay_main_label)
-        self.assertEqual("Main + Extra", best_result.gameplay_main_extra_label)
-        self.assertEqual("Completionist", best_result.gameplay_completionist_label)
-        self.assertAlmostEqual(7, TestNormalRequest.getSimpleNumber(best_result.gameplay_completionist), delta=3)
+        self.assertEqual("Crytek Budapest", best_result.profile_dev)
+        self.assertEqual("2008", str(best_result.release_world))
+        self.assertAlmostEqual(7, TestNormalRequest.getSimpleNumber(best_result.completionist), delta=3)
 
     @async_test
     async def test_game_name_with_numbers(self):
@@ -43,35 +39,27 @@ class TestAsyncRequest(TestCase):
         self.assertNotEqual(None, results, "Search Results are None")
         best_result = TestNormalRequest.getMaxSimilarityElement(results)
         self.assertEqual("The Witcher 3: Wild Hunt", best_result.game_name)
-        self.assertEqual("Main Story", best_result.gameplay_main_label)
-        self.assertEqual("Main + Extra", best_result.gameplay_main_extra_label)
-        self.assertEqual("Completionist", best_result.gameplay_completionist_label)
-        self.assertAlmostEqual(50, TestNormalRequest.getSimpleNumber(best_result.gameplay_main), delta=5)
+        self.assertAlmostEqual(50, TestNormalRequest.getSimpleNumber(best_result.main_story), delta=5)
 
     @async_test
-    async def test_game_with_no_all_values(self):
+    async def test_game_with_values(self):
         results = await HowLongToBeat().async_search("Battlefield 2142")
         self.assertNotEqual(None, results, "Search Results are None")
         best_result = TestNormalRequest.getMaxSimilarityElement(results)
         self.assertEqual("Battlefield 2142", best_result.game_name)
-        self.assertEqual(None, best_result.gameplay_main_label)
-        self.assertEqual("Co-Op", best_result.gameplay_main_extra_label)
-        self.assertEqual("Hours", best_result.gameplay_main_extra_unit)
-        self.assertAlmostEqual(17, TestNormalRequest.getSimpleNumber(best_result.gameplay_main_extra), delta=5)
-        self.assertEqual("Vs.", best_result.gameplay_completionist_label)
-        self.assertAlmostEqual(65, TestNormalRequest.getSimpleNumber(best_result.gameplay_completionist), delta=5)
-        self.assertEqual("Hours", best_result.gameplay_completionist_unit)
-        self.assertEqual(None, best_result.gameplay_main_unit)
-        self.assertEqual(-1, TestNormalRequest.getSimpleNumber(best_result.gameplay_main))
+        self.assertAlmostEqual(14, TestNormalRequest.getSimpleNumber(best_result.main_story), delta=5)
+        self.assertAlmostEqual(17, TestNormalRequest.getSimpleNumber(best_result.main_extra), delta=5)
+        self.assertAlmostEqual(30, TestNormalRequest.getSimpleNumber(best_result.completionist), delta=5)
 
     @async_test
-    async def test_game_link(self):
+    async def test_game_links(self):
         results = await HowLongToBeat().async_search("Battlefield 2142")
         self.assertNotEqual(None, results, "Search Results are None")
         best_result = TestNormalRequest.getMaxSimilarityElement(results)
         self.assertNotEqual(None, best_result, "Search Result is None")
         self.assertEqual("Battlefield 2142", best_result.game_name)
-        self.assertEqual("https://howlongtobeat.com/game?id=936", best_result.game_web_link)
+        self.assertEqual("https://howlongtobeat.com/game/936", best_result.game_web_link)
+        self.assertTrue("howlongtobeat.com/games/256px-Battlefield_2142_box_art.jpg" in best_result.game_image_url)
 
     @async_test
     async def test_game_default_dlc_search(self):
@@ -85,7 +73,7 @@ class TestAsyncRequest(TestCase):
 
     @async_test
     async def test_game_include_dlc_search(self):
-        results = await HowLongToBeat().async_search("Hearts of Stone", SearchModifiers.INCLUDE_DLC)
+        results = await HowLongToBeat().async_search("Hearts of Stone")
         self.assertNotEqual(None, results, "Search Results are None")
         best_result = TestNormalRequest.getMaxSimilarityElement(results)
         self.assertEqual("The Witcher 3: Wild Hunt - Hearts of Stone", best_result.game_name)
@@ -118,22 +106,22 @@ class TestAsyncRequest(TestCase):
                         "Wrong similarity results")
 
     @async_test
-    async def test_game_suffix_present(self):
+    async def test_game_alias_present(self):
         results = await HowLongToBeat(0).async_search("God Of War")
         self.assertNotEqual(None, results, "Search Results are None")
         self.assertNotEqual(0, len(results))
         best_element = max(results, key=lambda element: element.similarity)
         self.assertEqual("God of War".lower(), best_element.game_name.lower())
-        self.assertNotEqual(None, best_element.game_name_suffix, "The suffix is still None, it should not be")
-        self.assertEqual(best_element.game_name_suffix, "(2018)")
+        self.assertNotEqual(None, best_element.game_alias, "The suffix is still None, it should not be")
+        self.assertEqual(best_element.game_alias, "God of War (PS4)")
 
     @async_test
-    async def test_game_suffix_not_present(self):
+    async def test_game_alias_not_present(self):
         results = await HowLongToBeat(0).async_search("The Witcher 3: Wild Hunt")
         self.assertNotEqual(None, results, "Search Results are None")
         self.assertNotEqual(0, len(results))
         best_element = max(results, key=lambda element: element.similarity)
-        self.assertEqual(None, best_element.game_name_suffix, "The suffix is not None, it should be")
+        self.assertEqual(0, len(best_element.game_alias), "The suffix is not None, it should be")
 
     @async_test
     async def test_no_real_game(self):

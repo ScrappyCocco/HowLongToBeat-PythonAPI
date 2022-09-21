@@ -1,20 +1,19 @@
 # ---------------------------------------------------------------------
 # IMPORTS
 
-import aiohttp
-import requests
 import re
 import html
+import json
 from enum import Enum
+import aiohttp
+import requests
 from fake_useragent import UserAgent
-
 
 # ---------------------------------------------------------------------
 
+
 class SearchModifiers(Enum):
     NONE = ""
-    # INCLUDE_DLC is left, but should NO LONGER make a difference. HowLongToBeat re-added DLC in standard requests
-    INCLUDE_DLC = "show_dlc"
     # ISOLATE_DLC shows only DLC in the search result
     ISOLATE_DLC = "only_dlc"
     # HIDE_DLC hide DLCs in the search result
@@ -23,22 +22,9 @@ class SearchModifiers(Enum):
 
 class HTMLRequests:
     BASE_URL = 'https://howlongtobeat.com/'
-    ORIGIN_HEADER = 'https://howlongtobeat.com'
     REFERER_HEADER = BASE_URL
-    SEARCH_URL = BASE_URL + "search_results"
+    SEARCH_URL = BASE_URL + "api/search"
     GAME_URL = BASE_URL + "game"
-
-    @staticmethod
-    def get_search_request_parameters(page: int):
-        """
-        Generate the parameters for the search request
-        @param page: The page to search
-        @return: The parameters object for the request
-        """
-        params = {
-            'page': str(page)
-        }
-        return params
 
     @staticmethod
     def get_search_request_headers():
@@ -48,41 +34,57 @@ class HTMLRequests:
         """
         ua = UserAgent()
         headers = {
-            'content-type': 'application/x-www-form-urlencoded',
+            'content-type': 'application/json',
             'accept': '*/*',
             'User-Agent': ua.random,
-            'origin': HTMLRequests.ORIGIN_HEADER,
             'referer': HTMLRequests.REFERER_HEADER
         }
         return headers
 
     @staticmethod
-    def get_search_request_data(game_name: str, search_modifiers: SearchModifiers):
+    def get_search_request_data(game_name: str, search_modifiers: SearchModifiers, page: int):
         """
         Generate the data payload for the search request
         @param game_name: The name of the game to search
         @param search_modifiers: The search modifiers to use in the search
+        @param page: The page to search
         @return: The request (data) payload object for the request
         """
         payload = {
-            'queryString': game_name,
-            't': 'games',
-            'sorthead': 'popular',
-            'sortd': 'Normal Order',
-            'plat': '',
-            'length_type': 'main',
-            'length_min': '',
-            'length_max': '',
-            'detail': search_modifiers.value,
-            'v': '',
-            'f': '',
-            'g': '',
-            'randomize': '0'
+            'searchType': "games",
+            'searchTerms': game_name.split(),
+            'searchPage': page,
+            'size': 20,
+            'searchOptions': {
+                'games': {
+                    'userId': 0,
+                    'platform': "",
+                    'sortCategory': "popular",
+                    'rangeCategory': "main",
+                    'rangeTime': {
+                        'min': 0,
+                        'max': 0
+                    },
+                    'gameplay': {
+                        'perspective': "",
+                        'flow': "",
+                        'genre': ""
+                    },
+                    'modifier': search_modifiers.value,
+                },
+                'users': {
+                    'sortCategory': "postcount"
+                },
+                'filter': "",
+                'sort': 0,
+                'randomizer': 0
+            }
         }
-        return payload
+        return json.dumps(payload)
 
     @staticmethod
-    def send_web_request(game_name: str, search_modifiers: SearchModifiers = SearchModifiers.NONE, page: int = 1):
+    def send_web_request(game_name: str, search_modifiers: SearchModifiers = SearchModifiers.NONE,
+                         page: int = 1):
         """
         Function that search the game using a normal request
         @param game_name: The original game name received as input
@@ -90,18 +92,17 @@ class HTMLRequests:
         @param page: The page to explore of the research, unknown if this is actually used
         @return: The HTML code of the research if the request returned 200(OK), None otherwise
         """
-        params = HTMLRequests.get_search_request_parameters(page)
         headers = HTMLRequests.get_search_request_headers()
-        payload = HTMLRequests.get_search_request_data(game_name, search_modifiers)
+        payload = HTMLRequests.get_search_request_data(game_name, search_modifiers, page)
         # Make the post request and return the result if is valid
-        resp = requests.post(HTMLRequests.SEARCH_URL, params=params, headers=headers, data=payload)
+        resp = requests.post(HTMLRequests.SEARCH_URL, headers=headers, data=payload)
         if resp.status_code == 200:
             return resp.text
-        else:
-            return None
+        return None
 
     @staticmethod
-    async def send_async_web_request(game_name: str, search_modifiers: SearchModifiers = SearchModifiers.NONE, page: int = 1):
+    async def send_async_web_request(game_name: str, search_modifiers: SearchModifiers = SearchModifiers.NONE,
+                                     page: int = 1):
         """
         Function that search the game using an async request
         @param game_name: The original game name received as input
@@ -109,16 +110,14 @@ class HTMLRequests:
         @param page: The page to explore of the research, unknown if this is actually used
         @return: The HTML code of the research if the request returned 200(OK), None otherwise
         """
-        params = HTMLRequests.get_search_request_parameters(page)
         headers = HTMLRequests.get_search_request_headers()
-        payload = HTMLRequests.get_search_request_data(game_name, search_modifiers)
+        payload = HTMLRequests.get_search_request_data(game_name, search_modifiers, page)
         # Make the post request and return the result if is valid
         async with aiohttp.ClientSession() as session:
-            async with session.post(HTMLRequests.SEARCH_URL, params=params, headers=headers, data=payload) as resp:
+            async with session.post(HTMLRequests.SEARCH_URL, headers=headers, data=payload) as resp:
                 if resp is not None and str(resp.status) == "200":
                     return await resp.text()
-                else:
-                    return None
+                return None
 
     @staticmethod
     def __cut_game_title(game_title: str):
@@ -141,7 +140,7 @@ class HTMLRequests:
     @staticmethod
     def get_title_request_parameters(game_id: int):
         """
-        enerate the parameters for the search request
+        Generate the parameters for the search request
         @param game_id: The game id to search in HLTB
         @return: The parameters object for the request
         """
@@ -195,5 +194,4 @@ class HTMLRequests:
                 if resp is not None and str(resp.status) == "200":
                     text = await resp.text()
                     return HTMLRequests.__cut_game_title(text)
-                else:
-                    return None
+                return None

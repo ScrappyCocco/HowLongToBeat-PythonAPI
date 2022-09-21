@@ -9,53 +9,41 @@ class TestNormalRequestById(TestCase):
         result = HowLongToBeat().search_from_id(42818)
         self.assertNotEqual(None, result, "Search Result is None")
         self.assertEqual("Celeste", result.game_name)
-        self.assertEqual("Main Story", result.gameplay_main_label)
-        self.assertEqual("Main + Extra", result.gameplay_main_extra_label)
-        self.assertEqual("Completionist", result.gameplay_completionist_label)
-        self.assertAlmostEqual(12, TestNormalRequest.getSimpleNumber(result.gameplay_main_extra), delta=5)
+        self.assertAlmostEqual(12, TestNormalRequest.getSimpleNumber(result.main_story), delta=5)
 
     def test_game_name_with_colon(self):
         result = HowLongToBeat().search_from_id(4256)
         self.assertNotEqual(None, result, "Search Results are None")
         self.assertEqual("Half-Life: Opposing Force", result.game_name)
 
-    def test_game_name(self):
+    def test_game_name_and_dev(self):
         result = HowLongToBeat().search_from_id(2071)
         self.assertNotEqual(None, result, "Search Result is None")
         self.assertEqual("Crysis Warhead", result.game_name)
-        self.assertEqual("Main Story", result.gameplay_main_label)
-        self.assertEqual("Main + Extra", result.gameplay_main_extra_label)
-        self.assertEqual("Completionist", result.gameplay_completionist_label)
-        self.assertAlmostEqual(7, TestNormalRequest.getSimpleNumber(result.gameplay_completionist), delta=3)
+        self.assertEqual("Crytek Budapest", result.profile_dev)
+        self.assertEqual("2008", str(result.release_world))
+        self.assertAlmostEqual(7, TestNormalRequest.getSimpleNumber(result.completionist), delta=3)
 
     def test_game_name_with_numbers(self):
         result = HowLongToBeat().search_from_id(10270)
         self.assertNotEqual(None, result, "Search Result is None")
         self.assertEqual("The Witcher 3: Wild Hunt", result.game_name)
-        self.assertEqual("Main Story", result.gameplay_main_label)
-        self.assertEqual("Main + Extra", result.gameplay_main_extra_label)
-        self.assertEqual("Completionist", result.gameplay_completionist_label)
-        self.assertAlmostEqual(50, TestNormalRequest.getSimpleNumber(result.gameplay_main), delta=5)
+        self.assertAlmostEqual(50, TestNormalRequest.getSimpleNumber(result.main_story), delta=5)
 
-    def test_game_with_no_all_values(self):
+    def test_game_with_values(self):
         result = HowLongToBeat().search_from_id(936)
         self.assertNotEqual(None, result, "Search Result is None")
         self.assertEqual("Battlefield 2142", result.game_name)
-        self.assertEqual(None, result.gameplay_main_label)
-        self.assertEqual("Co-Op", result.gameplay_main_extra_label)
-        self.assertEqual("Hours", result.gameplay_main_extra_unit)
-        self.assertAlmostEqual(17, TestNormalRequest.getSimpleNumber(result.gameplay_main_extra), delta=5)
-        self.assertEqual("Vs.", result.gameplay_completionist_label)
-        self.assertAlmostEqual(65, TestNormalRequest.getSimpleNumber(result.gameplay_completionist), delta=5)
-        self.assertEqual("Hours", result.gameplay_completionist_unit)
-        self.assertEqual(None, result.gameplay_main_unit)
-        self.assertEqual(-1, TestNormalRequest.getSimpleNumber(result.gameplay_main))
+        self.assertAlmostEqual(14, TestNormalRequest.getSimpleNumber(result.main_story), delta=5)
+        self.assertAlmostEqual(17, TestNormalRequest.getSimpleNumber(result.main_extra), delta=5)
+        self.assertAlmostEqual(30, TestNormalRequest.getSimpleNumber(result.completionist), delta=5)
 
-    def test_game_link(self):
+    def test_game_links(self):
         result = HowLongToBeat().search_from_id(936)
         self.assertNotEqual(None, result, "Search Result is None")
         self.assertEqual("Battlefield 2142", result.game_name)
-        self.assertEqual("https://howlongtobeat.com/game?id=936", result.game_web_link)
+        self.assertEqual("https://howlongtobeat.com/game/936", result.game_web_link)
+        self.assertTrue("howlongtobeat.com/games/256px-Battlefield_2142_box_art.jpg" in result.game_image_url)
 
     def test_no_real_game(self):
         result = HowLongToBeat().search_from_id(123)
