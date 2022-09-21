@@ -1,6 +1,6 @@
 # HowLongToBeat Python API
 
-[![Python Test](https://github.com/ScrappyCocco/HowLongToBeat-PythonAPI/actions/workflows/python-test.yml/badge.svg)](https://github.com/ScrappyCocco/HowLongToBeat-PythonAPI/actions/workflows/python-test.yml)
+[![Python Test Released Published Version](https://github.com/ScrappyCocco/HowLongToBeat-PythonAPI/actions/workflows/python-test-release.yml/badge.svg)](https://github.com/ScrappyCocco/HowLongToBeat-PythonAPI/actions/workflows/python-test-release.yml)
 [![CodeQL](https://github.com/ScrappyCocco/HowLongToBeat-PythonAPI/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/ScrappyCocco/HowLongToBeat-PythonAPI/actions/workflows/codeql-analysis.yml)
 
 [![codecov](https://codecov.io/gh/ScrappyCocco/HowLongToBeat-PythonAPI/branch/master/graph/badge.svg)](https://codecov.io/gh/ScrappyCocco/HowLongToBeat-PythonAPI)
