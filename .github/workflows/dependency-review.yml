@@ -10,8 +10,6 @@ on:
   pull_request:
     types: [opened, reopened]
     branches: [ master ]
-  release:
-    types: [created]
 
 permissions:
   contents: read
