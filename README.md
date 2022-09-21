@@ -1,4 +1,5 @@
 # HowLongToBeat Python API
+
 [![Python Test](https://github.com/ScrappyCocco/HowLongToBeat-PythonAPI/actions/workflows/python-test.yml/badge.svg)](https://github.com/ScrappyCocco/HowLongToBeat-PythonAPI/actions/workflows/python-test.yml)
 [![CodeQL](https://github.com/ScrappyCocco/HowLongToBeat-PythonAPI/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/ScrappyCocco/HowLongToBeat-PythonAPI/actions/workflows/codeql-analysis.yml)
 
@@ -10,6 +11,7 @@ A simple Python API to read data from howlongtobeat.com.
 It is inspired by [ckatzorke - howlongtobeat](https://github.com/ckatzorke/howlongtobeat) JS API.
 
 ## Content
+
   - [Usage](#usage)
   - [Installation](#installation)
     - [Installing the package downloading the last release](#installing-the-package-downloading-the-last-release)
@@ -78,14 +80,13 @@ if results_list is not None and len(results_list) > 0:
 Once done, "best_element" will contain the best game found in the research.
 Every entry in the list (if not None in case of errors) is an object of type: [HowLongToBeatEntry](https://github.com/ScrappyCocco/HowLongToBeat-PythonAPI/blob/master/howlongtobeatpy/howlongtobeatpy/HowLongToBeatEntry.py).
 
-### Alternative search (by id)
+### Alternative search (by ID)
 
-If you prefer, you can get a game by id, this can be useful if you already have the game's howlongtobeat-id.
-Unluckily, is not worth to make a parser for the single-page game info, because is a user page that can change frequently and full of HTML.
+If you prefer, you can get a game by ID, this can be useful if you already have the game's howlongtobeat-id (the ID is the number in the URL, for example in [https://howlongtobeat.com/game/7231]([hello](https://howlongtobeat.com/game/7231)) the ID is 7231).
 
-To avoid a new parser, the search by id use a first request to get the game title, and then use the standard search, filtering the results and returning the unique game with that id.
+To avoid a new parser, the search by ID use a first request to get the game title, and then use the standard search with that title, filtering the results and returning the unique game with that ID.
 
-Remember that it could be a bit slower, but you avoid searching the game in the array.
+Remember that it could be a bit slower, but you avoid searching the game in the array by similarity.
 
 Here's the example:
 
@@ -102,21 +103,19 @@ result = await HowLongToBeat().async_search_from_id(123456)
 This call will return an unique [HowLongToBeatEntry](https://github.com/ScrappyCocco/HowLongToBeat-PythonAPI/blob/master/howlongtobeatpy/howlongtobeatpy/HowLongToBeatEntry.py) or None in case of errors.
 
 ### DLC search
-Apparently in the default search DLCs don't appear (see: [#6](https://github.com/ScrappyCocco/HowLongToBeat-PythonAPI/issues/6)). An `enum` has been added:
+
+An `enum` has been added to have a filter in the search:
 
 ```python
-SearchModifiers.NONE
-SearchModifiers.INCLUDE_DLC # Probably unnecessary
+SearchModifiers.NONE # default
 SearchModifiers.ISOLATE_DLC
 SearchModifiers.HIDE_DLC
 ```
 
-This optional parameter allow you to specify in the search if you want the default search (no DLCs), to INCLUDE DLCs along with games, or to ISOLATE DLCs (show only DLCs in the result).
-
-**Update January 2020**: Apparently HowLongToBeat re-added DLCs in the default search, so `SearchModifiers.INCLUDE_DLC` should no longer be necessary. It will remain for completeness and compatibility.
-A new option has been added instead: `SearchModifiers.HIDE_DLC`, that is basically the opposite of including DLCs.
+This optional parameter allow you to specify in the search if you want the default search (with DLCs), to HIDE DLCs and only show games, or to ISOLATE DLCs (show only DLCs).
 
 ### Results auto-filter
+
 To ignore games with a very different name, the standard search automatically filter results with a game name that has a similarity with the given name > than `0.4`, not adding the others to the result list.
 If you want all the results, or you want to change this value, you can put a parameter in the constructor:
 
@@ -132,21 +131,21 @@ Also remember that by default the similarity check **is case-sensitive** between
 results = HowLongToBeat(0.0).search("Awesome Game", similarity_case_sensitive=False)
 ```
 
-**Remember** that, when searching by ID, the similarity value and the case-sensitive bool are ignored.
+**Remember** that, when searching by ID, the similarity value and the case-sensitive bool are **ignored**.
 
 ### Reading an entry
 
-An entry is made of few values, you can check them [in the Entry class file](https://github.com/ScrappyCocco/HowLongToBeat-PythonAPI/blob/master/howlongtobeatpy/howlongtobeatpy/HowLongToBeatEntry.py)
+An entry is made of few values, you can check them [in the Entry class file](https://github.com/ScrappyCocco/HowLongToBeat-PythonAPI/blob/master/howlongtobeatpy/howlongtobeatpy/HowLongToBeatEntry.py). It also include the full JSON of values (already converted to Python dict) received from HLTB.
 
 ## Issues, Questions & Discussions
 
 If you found a bug report it as soon as you can creating an [issue](https://github.com/ScrappyCocco/HowLongToBeat-PythonAPI/issues/new), the code may not be perfect.
 
-If you need any new feature, or want to discuss the current implementation/features, consider opening a [discussion](https://github.com/ScrappyCocco/HowLongToBeat-PythonAPI/discussions).
+If you need any new feature, or want to discuss the current implementation/features, consider opening a [discussion](https://github.com/ScrappyCocco/HowLongToBeat-PythonAPI/discussions) or even propose a change with a [Pull Request](https://github.com/ScrappyCocco/HowLongToBeat-PythonAPI/pulls).
 
 ## Authors
 
-* **ScrappyCocco**
+* **ScrappyCocco** - Thank you for using my API
 
 ## License
 
