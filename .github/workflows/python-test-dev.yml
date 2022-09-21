@@ -23,7 +23,20 @@ jobs:
       run: |
         cd howlongtobeatpy
         python -m pip install --upgrade pip
+        pip install nose codecov
         pip install .
     - name: Test
       run: |
-        nosetests howlongtobeatpy
+        nosetests howlongtobeatpy --with-coverage
+        coverage xml
+    - name: Upload Coverage codecov
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      run: |
+        codecov
+    - name: SonarCloud Scan
+      uses: sonarsource/sonarcloud-github-action@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
