@@ -12,20 +12,20 @@ It is inspired by [ckatzorke - howlongtobeat](https://github.com/ckatzorke/howlo
 
 ## Content
 
-  - [Usage](#usage)
-  - [Installation](#installation)
-    - [Installing the package downloading the last release](#installing-the-package-downloading-the-last-release)
-    - [Installing the package from the source code](#installing-the-package-from-the-source-code)
-  - [Usage in code](#usage-in-code)
-    - [Start including it in your file](#start-including-it-in-your-file)
-    - [Now call search()](#now-call-search)
-    - [Alternative search (by id)](#alternative-search-by-id)
-    - [DLC search](#dlc-search)
-    - [Results auto-filter](#results-auto-filter)
-    - [Reading an entry](#reading-an-entry)
-  - [Found a bug?](#found-a-bug)
-  - [Authors](#authors)
-  - [License](#license)
+- [Usage](#usage)
+- [Installation](#installation)
+  - [Installing the package downloading the last release](#installing-the-package-downloading-the-last-release)
+  - [Installing the package from the source code](#installing-the-package-from-the-source-code)
+- [Usage in code](#usage-in-code)
+  - [Start including it in your file](#start-including-it-in-your-file)
+  - [Now call search()](#now-call-search)
+  - [Alternative search (by ID)](#alternative-search-by-id)
+  - [DLC search](#dlc-search)
+  - [Results auto-filter](#results-auto-filter)
+  - [Reading an entry](#reading-an-entry)
+- [Issues, Questions & Discussions](#issues-questions--discussions)
+- [Authors](#authors)
+- [License](#license)
 
 ## Usage
 
