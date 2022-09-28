@@ -15,10 +15,10 @@ class TestNormalRequest(TestCase):
     def getSimpleNumber(time_string):
         if time_string is None:
             return 0
+        if isinstance(time_string, float):
+            return time_string
         if isinstance(time_string, int):
             return time_string
-        if not time_string.isdigit():
-            return int(time_string.strip().replace("½", " "))
         return int(time_string)
 
     def test_simple_similarity_value(self):

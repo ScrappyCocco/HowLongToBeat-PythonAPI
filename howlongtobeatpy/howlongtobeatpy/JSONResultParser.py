@@ -64,10 +64,10 @@ class JSONResultParser:
         # Add full JSON content to the entry
         current_entry.json_content = input_game_element
         # Add a few times elements as help for the user
-        current_entry.main_story = round(input_game_element["comp_main"] // 3600, 1)
-        current_entry.main_extra = round(input_game_element["comp_plus"] // 3600, 1)
-        current_entry.completionist = round(input_game_element["comp_100"] // 3600, 1)
-        current_entry.all_styles = round(input_game_element["comp_all"] // 3600, 1)
+        current_entry.main_story = round(input_game_element["comp_main"] / 3600, 2)
+        current_entry.main_extra = round(input_game_element["comp_plus"] / 3600, 2)
+        current_entry.completionist = round(input_game_element["comp_100"] / 3600, 2)
+        current_entry.all_styles = round(input_game_element["comp_all"] / 3600, 2)
         # Compute Similarity
         game_name_similarity = self.similar(self.game_name, current_entry.game_name,
                                             self.game_name_numbers, self.similarity_case_sensitive)
