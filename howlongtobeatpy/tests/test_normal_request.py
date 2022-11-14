@@ -123,7 +123,7 @@ class TestNormalRequest(TestCase):
         self.assertEqual(best_element.game_alias, "God of War (PS4)")
 
     def test_game_alias_not_present(self):
-        results = HowLongToBeat(0).search("The Witcher 3: Wild Hunt")
+        results = HowLongToBeat(0).search("XCOM 2")
         self.assertNotEqual(None, results, "Search Results are None")
         self.assertNotEqual(0, len(results))
         best_element = max(results, key=lambda element: element.similarity)

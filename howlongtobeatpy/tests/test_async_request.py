@@ -117,7 +117,7 @@ class TestAsyncRequest(TestCase):
 
     @async_test
     async def test_game_alias_not_present(self):
-        results = await HowLongToBeat(0).async_search("The Witcher 3: Wild Hunt")
+        results = await HowLongToBeat(0).async_search("XCOM 2")
         self.assertNotEqual(None, results, "Search Results are None")
         self.assertNotEqual(0, len(results))
         best_element = max(results, key=lambda element: element.similarity)
