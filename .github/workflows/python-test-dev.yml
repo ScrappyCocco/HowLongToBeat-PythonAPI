@@ -3,7 +3,7 @@
 name: Python Test Github Dev Version
 
 on:
-  [push, pull_request, discussion, issues]
+  [push, pull_request, discussion, release, issues]
 
 jobs:
   test:
@@ -18,16 +18,17 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.7'
+        python-version: '3.9'
     - name: Install dependencies
       run: |
         cd howlongtobeatpy
         python -m pip install --upgrade pip
-        pip install nose codecov
+        pip install -U pytest
+        pip install codecov
         pip install .
     - name: Test
       run: |
-        nosetests howlongtobeatpy --with-coverage
+        coverage run -m pytest -v && coverage report -m
         coverage xml
     - name: Upload Coverage codecov
       env:

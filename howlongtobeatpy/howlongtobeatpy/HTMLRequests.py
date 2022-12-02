@@ -36,7 +36,7 @@ class HTMLRequests:
         headers = {
             'content-type': 'application/json',
             'accept': '*/*',
-            'User-Agent': ua.random,
+            'User-Agent': ua.random.strip(),
             'referer': HTMLRequests.REFERER_HEADER
         }
         return headers

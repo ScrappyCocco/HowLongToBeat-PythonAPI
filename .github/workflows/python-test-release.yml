@@ -1,6 +1,6 @@
 # This workflows will test the released version of the API
 
-name: Python Test Released Published Version
+name: Python Test Scheduled
 
 on:
   release:
@@ -26,14 +26,15 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.7'
+        python-version: '3.9'
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install howlongtobeatpy nose codecov
+        pip install -U pytest
+        pip install howlongtobeatpy codecov
     - name: Test
       run: |
-        nosetests howlongtobeatpy --with-coverage
+        coverage run -m pytest -v && coverage report -m
         coverage xml
     - name: Upload Coverage codecov
       env:

@@ -1,5 +1,7 @@
 # ---------------------------------------------------------------------
 # IMPORTS
+import asyncio
+import platform
 
 from .HTMLRequests import HTMLRequests, SearchModifiers
 from .JSONResultParser import JSONResultParser
@@ -23,6 +25,9 @@ class HowLongToBeat:
         0 will return all the results; 1 means perfectly equal and should not be used; default is 0.4;
         """
         self.minimum_similarity = input_minimum_similarity
+
+        if platform.system() == 'Windows':
+            asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
     # ------------------------------------------
     # (Standard) Search functions using game name
