@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setup(name='howlongtobeatpy',
-      version='1.0.2',
+      version='1.0.3',
       packages=find_packages(exclude=['tests']),
       description='A Python API for How Long to Beat',
       long_description=long_description,
@@ -17,6 +17,6 @@ setup(name='howlongtobeatpy',
           'aiohttp>=3.7.3',
           'requests>=2.25.1',
           'aiounittest>=1.4.0',
-          'fake_useragent==0.1.11'
+          'fake_useragent>=1.1.0'
       ],
       zip_safe=False)
