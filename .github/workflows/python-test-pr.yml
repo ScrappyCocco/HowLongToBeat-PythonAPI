@@ -1,9 +1,9 @@
 # This workflows will test the dev version of the API when pushed on github
 
-name: Python Test Github Dev Version
+name: Python Test Github Community
 
 on:
-  [push, release]
+  [pull_request, discussion, issues]
 
 jobs:
   test:
@@ -30,14 +30,3 @@ jobs:
       run: |
         coverage run -m pytest -v && coverage report -m
         coverage xml
-    - name: Upload Coverage codecov
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      run: |
-        codecov
-    - name: SonarCloud Scan
-      uses: sonarsource/sonarcloud-github-action@master
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
