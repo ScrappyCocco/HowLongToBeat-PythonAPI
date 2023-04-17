@@ -24,9 +24,7 @@ jobs:
         cd howlongtobeatpy
         python -m pip install --upgrade pip
         pip install -U pytest
-        pip install codecov
         pip install .
     - name: Test
       run: |
-        coverage run -m pytest -v && coverage report -m
-        coverage xml
+        pytest --cov=howlongtobeatpy --cov-report=xml

@@ -27,8 +27,7 @@ jobs:
         pip install .
     - name: Test
       run: |
-        coverage run -m pytest -v && coverage report -m
-        coverage xml
+        pytest --cov=howlongtobeatpy --cov-report=xml
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
       with:

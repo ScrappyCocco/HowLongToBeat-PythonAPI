@@ -31,17 +31,14 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -U pytest
-        pip install howlongtobeatpy codecov
+        pip install howlongtobeatpy
     - name: Test
       run: |
-        coverage run -m pytest -v && coverage report -m
-        coverage xml
-    - name: Upload Coverage codecov
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      run: |
-        codecov
+        pytest --cov=howlongtobeatpy --cov-report=xml
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
     - name: SonarCloud Scan
       uses: sonarsource/sonarcloud-github-action@master
       env:
