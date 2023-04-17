@@ -23,8 +23,7 @@ jobs:
       run: |
         cd howlongtobeatpy
         python -m pip install --upgrade pip
-        pip install -U pytest
+        pip install -U pytest pytest-cov
         pip install .
     - name: Test
-      run: |
-        pytest --cov=howlongtobeatpy --cov-report=xml
+      run: pytest --cov=howlongtobeatpy --cov-report=xml
