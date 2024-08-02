@@ -23,7 +23,7 @@ class SearchModifiers(Enum):
 class HTMLRequests:
     BASE_URL = 'https://howlongtobeat.com/'
     REFERER_HEADER = BASE_URL
-    SEARCH_URL = BASE_URL + "api/search"
+    SEARCH_URL = BASE_URL + "api/search" + "/4b4cbe570602c88660f7df8ea0cb6b6e"
     GAME_URL = BASE_URL + "game"
 
     @staticmethod
