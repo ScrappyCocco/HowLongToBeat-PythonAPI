@@ -44,18 +44,6 @@ class HowLongToBeat:
         """
         if game_name is None or len(game_name) == 0:
             return None
-        # Fetch the API Key
-        api_key_result = HTMLRequests.SEARCH_API_KEY
-        if HTMLRequests.SEARCH_API_KEY is None:
-            api_key_result = await HTMLRequests.async_send_website_request_getcode(False)
-            if api_key_result is None:
-                api_key_result = await HTMLRequests.async_send_website_request_getcode(True)
-        if api_key_result is not None:
-            # Set it for Caching
-            HTMLRequests.SEARCH_API_KEY = api_key_result
-        else:
-            return None
-        # Fetch the other data
         html_result = await HTMLRequests.send_async_web_request(game_name, search_modifiers)
         if html_result is not None:
             return self.__parse_web_result(game_name, html_result, None, similarity_case_sensitive)
@@ -72,18 +60,6 @@ class HowLongToBeat:
         """
         if game_name is None or len(game_name) == 0:
             return None
-        # Fetch the API Key
-        api_key_result = HTMLRequests.SEARCH_API_KEY
-        if HTMLRequests.SEARCH_API_KEY is None:
-            api_key_result = HTMLRequests.send_website_request_getcode(False)
-            if api_key_result is None:
-                api_key_result = HTMLRequests.send_website_request_getcode(True)
-        if api_key_result is not None:
-            # Set it for Caching
-            HTMLRequests.SEARCH_API_KEY = api_key_result
-        else:
-            return None
-        # Fetch the other data
         html_result = HTMLRequests.send_web_request(game_name, search_modifiers)
         if html_result is not None:
             return self.__parse_web_result(game_name, html_result, None, similarity_case_sensitive)
@@ -103,18 +79,6 @@ class HowLongToBeat:
         """
         if game_id is None or game_id == 0:
             return None
-        # Fetch the API Key
-        api_key_result = HTMLRequests.SEARCH_API_KEY
-        if HTMLRequests.SEARCH_API_KEY is None:
-            api_key_result = await HTMLRequests.async_send_website_request_getcode(False)
-            if api_key_result is None:
-                api_key_result = await HTMLRequests.async_send_website_request_getcode(True)
-        if api_key_result is not None:
-            # Set it for Caching
-            HTMLRequests.SEARCH_API_KEY = api_key_result
-        else:
-            return None
-        # Fetch the other data
         game_title = await HTMLRequests.async_get_game_title(game_id)
         if game_title is not None:
             html_result = await HTMLRequests.send_async_web_request(game_title)
@@ -135,18 +99,6 @@ class HowLongToBeat:
         """
         if game_id is None or game_id == 0:
             return None
-        # Fetch the API Key
-        api_key_result = HTMLRequests.SEARCH_API_KEY
-        if HTMLRequests.SEARCH_API_KEY is None:
-            api_key_result = HTMLRequests.send_website_request_getcode(False)
-            if api_key_result is None:
-                api_key_result = HTMLRequests.send_website_request_getcode(True)
-        if api_key_result is not None:
-            # Set it for Caching
-            HTMLRequests.SEARCH_API_KEY = api_key_result
-        else:
-            return None
-        # Fetch the other data
         game_title = HTMLRequests.get_game_title(game_id)
         if game_title is not None:
             html_result = HTMLRequests.send_web_request(game_title)

@@ -25,7 +25,6 @@ class HTMLRequests:
     BASE_URL = 'https://howlongtobeat.com/'
     REFERER_HEADER = BASE_URL
     SEARCH_URL = BASE_URL + "api/search"
-    SEARCH_API_KEY = None
     GAME_URL = BASE_URL + "game"
 
     @staticmethod
@@ -96,8 +95,11 @@ class HTMLRequests:
         """
         headers = HTMLRequests.get_search_request_headers()
         payload = HTMLRequests.get_search_request_data(game_name, search_modifiers, page)
+        api_key_result = HTMLRequests.send_website_request_getcode(False)
+        if api_key_result is None:
+            api_key_result = HTMLRequests.send_website_request_getcode(True)
         # Make the post request and return the result if is valid
-        search_url_with_key = HTMLRequests.SEARCH_URL + "/" + HTMLRequests.SEARCH_API_KEY
+        search_url_with_key = HTMLRequests.SEARCH_URL + "/" + api_key_result
         resp = requests.post(search_url_with_key, headers=headers, data=payload)
         if resp.status_code == 200:
             return resp.text
@@ -115,8 +117,11 @@ class HTMLRequests:
         """
         headers = HTMLRequests.get_search_request_headers()
         payload = HTMLRequests.get_search_request_data(game_name, search_modifiers, page)
+        api_key_result = await HTMLRequests.async_send_website_request_getcode(False)
+        if api_key_result is None:
+            api_key_result = await HTMLRequests.async_send_website_request_getcode(True)
         # Make the post request and return the result if is valid
-        search_url_with_key = HTMLRequests.SEARCH_URL + "/" + HTMLRequests.SEARCH_API_KEY
+        search_url_with_key = HTMLRequests.SEARCH_URL + "/" + api_key_result
         async with aiohttp.ClientSession() as session:
             async with session.post(search_url_with_key, headers=headers, data=payload) as resp:
                 if resp is not None and str(resp.status) == "200":
