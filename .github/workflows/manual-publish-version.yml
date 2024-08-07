@@ -28,7 +28,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: python-package-distributions
-        path: dist/
+        path: howlongtobeatpy/dist/
   publish-to-pypi:
     name: >-
       Publish Python 🐍 distribution 📦 to PyPI
