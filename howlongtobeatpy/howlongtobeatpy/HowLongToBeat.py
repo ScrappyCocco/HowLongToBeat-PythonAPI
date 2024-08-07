@@ -60,6 +60,15 @@ class HowLongToBeat:
         """
         if game_name is None or len(game_name) == 0:
             return None
+        if HTMLRequests.SEARCH_API_KEY is None:
+            api_key_result = HTMLRequests.send_website_request_getcode(False)
+            if api_key_result is None:
+                api_key_result = HTMLRequests.send_website_request_getcode(True)
+        if api_key_result is not None:
+            # Set it for Caching
+            HTMLRequests.SEARCH_API_KEY = api_key_result
+        else:
+            return None         
         html_result = HTMLRequests.send_web_request(game_name, search_modifiers)
         if html_result is not None:
             return self.__parse_web_result(game_name, html_result, None, similarity_case_sensitive)
