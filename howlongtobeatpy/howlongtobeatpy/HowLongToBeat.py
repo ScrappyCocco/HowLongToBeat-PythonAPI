@@ -45,6 +45,7 @@ class HowLongToBeat:
         if game_name is None or len(game_name) == 0:
             return None
         # Fetch the API Key
+        api_key_result = HTMLRequests.SEARCH_API_KEY
         if HTMLRequests.SEARCH_API_KEY is None:
             api_key_result = await HTMLRequests.async_send_website_request_getcode(False)
             if api_key_result is None:
@@ -72,6 +73,7 @@ class HowLongToBeat:
         if game_name is None or len(game_name) == 0:
             return None
         # Fetch the API Key
+        api_key_result = HTMLRequests.SEARCH_API_KEY
         if HTMLRequests.SEARCH_API_KEY is None:
             api_key_result = HTMLRequests.send_website_request_getcode(False)
             if api_key_result is None:
@@ -102,6 +104,7 @@ class HowLongToBeat:
         if game_id is None or game_id == 0:
             return None
         # Fetch the API Key
+        api_key_result = HTMLRequests.SEARCH_API_KEY
         if HTMLRequests.SEARCH_API_KEY is None:
             api_key_result = await HTMLRequests.async_send_website_request_getcode(False)
             if api_key_result is None:
@@ -133,6 +136,7 @@ class HowLongToBeat:
         if game_id is None or game_id == 0:
             return None
         # Fetch the API Key
+        api_key_result = HTMLRequests.SEARCH_API_KEY
         if HTMLRequests.SEARCH_API_KEY is None:
             api_key_result = HTMLRequests.send_website_request_getcode(False)
             if api_key_result is None:
