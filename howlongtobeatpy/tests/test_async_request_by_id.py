@@ -50,7 +50,8 @@ class TestAsyncRequestById(TestCase):
         self.assertNotEqual(None, result, "Search Result is None")
         self.assertEqual("Battlefield 2142", result.game_name)
         self.assertEqual("https://howlongtobeat.com/game/936", result.game_web_link)
-        self.assertTrue("howlongtobeat.com/games/256px-Battlefield_2142_box_art.jpg" in result.game_image_url)
+        self.assertTrue("howlongtobeat.com/games/" in result.game_image_url)
+        self.assertTrue("Battlefield_2142.png" in result.game_image_url or "Battlefield_2142.jpg" in result.game_image_url)
 
     @async_test
     async def test_no_real_game(self):

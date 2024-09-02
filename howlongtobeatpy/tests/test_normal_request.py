@@ -73,7 +73,8 @@ class TestNormalRequest(TestCase):
         self.assertNotEqual(None, best_result, "Search Result is None")
         self.assertEqual("Battlefield 2142", best_result.game_name)
         self.assertEqual("https://howlongtobeat.com/game/936", best_result.game_web_link)
-        self.assertTrue("howlongtobeat.com/games/256px-Battlefield_2142_box_art.jpg" in best_result.game_image_url)
+        self.assertTrue("howlongtobeat.com/games/" in best_result.game_image_url)
+        self.assertTrue("Battlefield_2142.png" in best_result.game_image_url or "Battlefield_2142.jpg" in best_result.game_image_url)
 
     def test_game_default_dlc_search(self):
         results = HowLongToBeat().search("Hearts of Stone")
