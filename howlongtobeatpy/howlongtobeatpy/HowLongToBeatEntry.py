@@ -2,6 +2,7 @@ class HowLongToBeatEntry:
     """
     A simple class to collect all game data that are being read from the JSON response
     It contains just the main data and values for the game, the rest can be read manually from the JSON
+    Consider that some values could be None, such as profile_dev, since HLTB sometimes remove/add values
     The full content for the entry is available in json_content
     """
 

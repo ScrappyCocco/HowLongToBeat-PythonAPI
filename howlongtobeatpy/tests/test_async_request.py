@@ -29,7 +29,8 @@ class TestAsyncRequest(TestCase):
         self.assertNotEqual(None, results, "Search Results are None")
         best_result = TestNormalRequest.getMaxSimilarityElement(results)
         self.assertEqual("Crysis Warhead", best_result.game_name)
-        self.assertEqual("Crytek Budapest", best_result.profile_dev)
+        if best_result.profile_dev is not None:
+            self.assertEqual("Crytek Budapest", best_result.profile_dev)
         self.assertEqual("2008", str(best_result.release_world))
         self.assertAlmostEqual(7, TestNormalRequest.getSimpleNumber(best_result.completionist), delta=3)
 

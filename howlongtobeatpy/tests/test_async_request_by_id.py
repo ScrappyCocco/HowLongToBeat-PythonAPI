@@ -24,7 +24,8 @@ class TestAsyncRequestById(TestCase):
         result = await HowLongToBeat().async_search_from_id(2071)
         self.assertNotEqual(None, result, "Search Result is None")
         self.assertEqual("Crysis Warhead", result.game_name)
-        self.assertEqual("Crytek Budapest", result.profile_dev)
+        if result.profile_dev is not None:
+            self.assertEqual("Crytek Budapest", result.profile_dev)
         self.assertEqual("2008", str(result.release_world))
         self.assertAlmostEqual(7, TestNormalRequest.getSimpleNumber(result.completionist), delta=3)
 

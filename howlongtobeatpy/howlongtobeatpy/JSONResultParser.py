@@ -51,23 +51,30 @@ class JSONResultParser:
     def parse_json_element(self, input_game_element):
         current_entry = HowLongToBeatEntry()
         # Compute base fields
-        current_entry.game_id = input_game_element["game_id"]
-        current_entry.game_name = input_game_element["game_name"]
-        current_entry.game_alias = input_game_element["game_alias"]
-        current_entry.game_type = input_game_element["game_type"]
-        current_entry.game_image_url = self.IMAGE_URL_PREFIX + input_game_element["game_image"]
+        current_entry.game_id = input_game_element.get("game_id")
+        current_entry.game_name = input_game_element.get("game_name")
+        current_entry.game_alias = input_game_element.get("game_alias")
+        current_entry.game_type = input_game_element.get("game_type")
+        if "game_image" in input_game_element:
+            current_entry.game_image_url = self.IMAGE_URL_PREFIX + input_game_element.get("game_image")
         current_entry.game_web_link = self.GAME_URL_PREFIX + str(current_entry.game_id)
-        current_entry.review_score = input_game_element["review_score"]
-        current_entry.profile_dev = input_game_element["profile_dev"]
-        current_entry.profile_platforms = input_game_element["profile_platform"].split(", ")
-        current_entry.release_world = input_game_element["release_world"]
+        current_entry.review_score = input_game_element.get("review_score")
+        current_entry.profile_dev = input_game_element.get("profile_dev")
+        if "profile_platform" in input_game_element:
+            current_entry.profile_platforms = input_game_element.get("profile_platform").split(", ")
+        current_entry.release_world = input_game_element.get("release_world")
         # Add full JSON content to the entry
         current_entry.json_content = input_game_element
         # Add a few times elements as help for the user
-        current_entry.main_story = round(input_game_element["comp_main"] / 3600, 2)
-        current_entry.main_extra = round(input_game_element["comp_plus"] / 3600, 2)
-        current_entry.completionist = round(input_game_element["comp_100"] / 3600, 2)
-        current_entry.all_styles = round(input_game_element["comp_all"] / 3600, 2)
+        # Calculate only if value is not None
+        if "comp_main" in input_game_element:
+            current_entry.main_story = round(input_game_element.get("comp_main") / 3600, 2)
+        if "comp_plus" in input_game_element:
+            current_entry.main_extra = round(input_game_element.get("comp_plus") / 3600, 2)
+        if "comp_100" in input_game_element:
+            current_entry.completionist = round(input_game_element.get("comp_100") / 3600, 2)
+        if "comp_all" in input_game_element:
+            current_entry.all_styles = round(input_game_element.get("comp_all") / 3600, 2)
         # Compute Similarity
         game_name_similarity = self.similar(self.game_name, current_entry.game_name,
                                             self.game_name_numbers, self.similarity_case_sensitive)
