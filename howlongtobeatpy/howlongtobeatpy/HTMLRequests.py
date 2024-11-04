@@ -4,8 +4,8 @@
 import re
 import html
 import json
-from bs4 import BeautifulSoup
 from enum import Enum
+from bs4 import BeautifulSoup
 import aiohttp
 import requests
 from fake_useragent import UserAgent
@@ -100,7 +100,7 @@ class HTMLRequests:
             api_key_result = HTMLRequests.send_website_request_getcode(True)
         # Make the post request and return the result if is valid
         search_url_with_key = HTMLRequests.SEARCH_URL + "/" + api_key_result
-        resp = requests.post(search_url_with_key, headers=headers, data=payload)
+        resp = requests.post(search_url_with_key, headers=headers, data=payload, timeout=60)
         if resp.status_code == 200:
             return resp.text
         return None
@@ -129,7 +129,7 @@ class HTMLRequests:
                 return None
 
     @staticmethod
-    def __cut_game_title(game_title: str):
+    def __cut_game_title(page_source: str):
         """
         Function that extract the game title from the html title of the howlongtobeat page
         @param game_title: The HowLongToBeat page title of the game
@@ -138,12 +138,15 @@ class HTMLRequests:
         (So, in this example: "A Way Out")
         """
 
-        if game_title is None or len(game_title) == 0:
+        if page_source is None or len(page_source) == 0:
             return None
 
-        title = re.search("<title>(.*)<\/title>", game_title)
+        soup = BeautifulSoup(page_source, 'html.parser')
+        title_tag = soup.title
+        title_text = title_tag.string
+
         # The position of start and end of this method may change if the website change
-        cut_title = str(html.unescape(title.group(1)[12:-17]))
+        cut_title = title_text[12:-17].strip()
         return cut_title
 
     @staticmethod
@@ -183,7 +186,7 @@ class HTMLRequests:
         headers = HTMLRequests.get_title_request_headers()
 
         # Request and extract title
-        contents = requests.get(HTMLRequests.GAME_URL, params=params, headers=headers)
+        contents = requests.get(HTMLRequests.GAME_URL, params=params, headers=headers, timeout=60)
         return HTMLRequests.__cut_game_title(contents.text)
 
     @staticmethod
@@ -213,7 +216,7 @@ class HTMLRequests:
         """
         # Make the post request and return the result if is valid
         headers = HTMLRequests.get_title_request_headers()
-        resp = requests.get(HTMLRequests.BASE_URL, headers=headers)
+        resp = requests.get(HTMLRequests.BASE_URL, headers=headers, timeout=60)
         if resp.status_code == 200 and resp.text is not None:
                 # Parse the HTML content using BeautifulSoup
                 soup = BeautifulSoup(resp.text, 'html.parser')
@@ -225,7 +228,7 @@ class HTMLRequests:
                     matching_scripts = [script['src'] for script in scripts if '_app-' in script['src']]
                 for script_url in matching_scripts:
                     script_url = HTMLRequests.BASE_URL + script_url
-                    script_resp = requests.get(script_url, headers=headers)
+                    script_resp = requests.get(script_url, headers=headers, timeout=60)
                     if script_resp.status_code == 200 and script_resp.text is not None:
                         pattern = r'"/api/search/".concat\("([a-zA-Z0-9]+)"\)'
                         matches = re.findall(pattern, script_resp.text)
