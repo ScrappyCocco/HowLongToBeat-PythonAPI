@@ -2,7 +2,6 @@
 # IMPORTS
 
 import re
-import html
 import json
 from enum import Enum
 from bs4 import BeautifulSoup
@@ -43,7 +42,7 @@ class HTMLRequests:
         return headers
 
     @staticmethod
-    def get_search_request_data(game_name: str, search_modifiers: SearchModifiers, page: int):
+    def get_search_request_data(game_name: str, search_modifiers: SearchModifiers, page: int, api_key: str):
         """
         Generate the data payload for the search request
         @param game_name: The name of the game to search
@@ -74,6 +73,7 @@ class HTMLRequests:
                     'modifier': search_modifiers.value,
                 },
                 'users': {
+                    'id': api_key,
                     'sortCategory': "postcount"
                 },
                 'filter': "",
@@ -94,12 +94,12 @@ class HTMLRequests:
         @return: The HTML code of the research if the request returned 200(OK), None otherwise
         """
         headers = HTMLRequests.get_search_request_headers()
-        payload = HTMLRequests.get_search_request_data(game_name, search_modifiers, page)
         api_key_result = HTMLRequests.send_website_request_getcode(False)
         if api_key_result is None:
             api_key_result = HTMLRequests.send_website_request_getcode(True)
+        payload = HTMLRequests.get_search_request_data(game_name, search_modifiers, page, api_key_result)
         # Make the post request and return the result if is valid
-        search_url_with_key = HTMLRequests.SEARCH_URL + "/" + api_key_result
+        search_url_with_key = HTMLRequests.SEARCH_URL
         resp = requests.post(search_url_with_key, headers=headers, data=payload, timeout=60)
         if resp.status_code == 200:
             return resp.text
@@ -116,10 +116,10 @@ class HTMLRequests:
         @return: The HTML code of the research if the request returned 200(OK), None otherwise
         """
         headers = HTMLRequests.get_search_request_headers()
-        payload = HTMLRequests.get_search_request_data(game_name, search_modifiers, page)
         api_key_result = await HTMLRequests.async_send_website_request_getcode(False)
         if api_key_result is None:
             api_key_result = await HTMLRequests.async_send_website_request_getcode(True)
+        payload = HTMLRequests.get_search_request_data(game_name, search_modifiers, page, api_key_result)
         # Make the post request and return the result if is valid
         search_url_with_key = HTMLRequests.SEARCH_URL + "/" + api_key_result
         async with aiohttp.ClientSession() as session:
@@ -207,7 +207,7 @@ class HTMLRequests:
                     text = await resp.text()
                     return HTMLRequests.__cut_game_title(text)
                 return None
-            
+
     @staticmethod
     def send_website_request_getcode(parse_all_scripts: bool):
         """
@@ -218,24 +218,24 @@ class HTMLRequests:
         headers = HTMLRequests.get_title_request_headers()
         resp = requests.get(HTMLRequests.BASE_URL, headers=headers, timeout=60)
         if resp.status_code == 200 and resp.text is not None:
-                # Parse the HTML content using BeautifulSoup
-                soup = BeautifulSoup(resp.text, 'html.parser')
-                # Find all <script> tags with a src attribute containing the substring
-                scripts = soup.find_all('script', src=True)
-                if parse_all_scripts:
-                    matching_scripts = [script['src'] for script in scripts]
-                else:
-                    matching_scripts = [script['src'] for script in scripts if '_app-' in script['src']]
-                for script_url in matching_scripts:
-                    script_url = HTMLRequests.BASE_URL + script_url
-                    script_resp = requests.get(script_url, headers=headers, timeout=60)
-                    if script_resp.status_code == 200 and script_resp.text is not None:
-                        pattern = r'"/api/search/".concat\("([a-zA-Z0-9]+)"\)'
-                        matches = re.findall(pattern, script_resp.text)
-                        for match in matches:
-                            return match
+            # Parse the HTML content using BeautifulSoup
+            soup = BeautifulSoup(resp.text, 'html.parser')
+            # Find all <script> tags with a src attribute containing the substring
+            scripts = soup.find_all('script', src=True)
+            if parse_all_scripts:
+                matching_scripts = [script['src'] for script in scripts]
+            else:
+                matching_scripts = [script['src'] for script in scripts if '_app-' in script['src']]
+            for script_url in matching_scripts:
+                script_url = HTMLRequests.BASE_URL + script_url
+                script_resp = requests.get(script_url, headers=headers, timeout=60)
+                if script_resp.status_code == 200 and script_resp.text is not None:
+                    pattern = r'users\s*:\s*{\s*id\s*:\s*"([^"]+)"'
+                    matches = re.findall(pattern, script_resp.text)
+                    for match in matches:
+                        return match
         return None
-    
+
     @staticmethod
     async def async_send_website_request_getcode(parse_all_scripts: bool):
         """
@@ -262,11 +262,11 @@ class HTMLRequests:
                             async with session.get(script_url, headers=headers) as script_resp:
                                 if script_resp is not None and str(resp.status) == "200":
                                     script_resp_text = await script_resp.text()
-                                    pattern = r'"/api/search/".concat\("([a-zA-Z0-9]+)"\)'
+                                    pattern = r'users\s*:\s*{\s*id\s*:\s*"([^"]+)"'
                                     matches = re.findall(pattern, script_resp_text)
                                     for match in matches:
                                         return match
                                 else:
-                                    return None        
+                                    return None
                 else:
-                    return None                
+                    return None

@@ -1,10 +1,10 @@
 from setuptools import setup, find_packages
 
-with open("README.md", "r") as fh:
+with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setup(name='howlongtobeatpy',
-      version='1.0.9',
+      version='1.0.10',
       packages=find_packages(exclude=['tests']),
       description='A Python API for How Long to Beat',
       long_description=long_description,

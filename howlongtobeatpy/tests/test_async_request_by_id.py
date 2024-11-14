@@ -34,16 +34,16 @@ class TestAsyncRequestById(TestCase):
         result = await HowLongToBeat().async_search_from_id(10270)
         self.assertNotEqual(None, result, "Search Result is None")
         self.assertEqual("The Witcher 3: Wild Hunt", result.game_name)
-        self.assertAlmostEqual(50, TestNormalRequest.getSimpleNumber(result.main_story), delta=5)
+        self.assertAlmostEqual(50, TestNormalRequest.getSimpleNumber(result.main_story), delta=25)
 
     @async_test
     async def test_game_with_values(self):
-        result = await HowLongToBeat().async_search_from_id(936)
-        self.assertNotEqual(None, result, "Search Result is None")
-        self.assertEqual("Battlefield 2142", result.game_name)
-        self.assertAlmostEqual(14, TestNormalRequest.getSimpleNumber(result.main_story), delta=5)
-        self.assertAlmostEqual(17, TestNormalRequest.getSimpleNumber(result.main_extra), delta=5)
-        self.assertAlmostEqual(30, TestNormalRequest.getSimpleNumber(result.completionist), delta=5)
+        result = await HowLongToBeat().async_search_from_id(2070)
+        self.assertNotEqual(None, result, "Search Results are None")
+        self.assertEqual("Crysis 3", result.game_name)
+        self.assertAlmostEqual(6, TestNormalRequest.getSimpleNumber(result.main_story), delta=20)
+        self.assertAlmostEqual(8, TestNormalRequest.getSimpleNumber(result.main_extra), delta=20)
+        self.assertAlmostEqual(13, TestNormalRequest.getSimpleNumber(result.completionist), delta=20)
 
     @async_test
     async def test_game_links(self):

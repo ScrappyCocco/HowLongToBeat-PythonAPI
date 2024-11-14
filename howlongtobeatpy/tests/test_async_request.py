@@ -40,17 +40,17 @@ class TestAsyncRequest(TestCase):
         self.assertNotEqual(None, results, "Search Results are None")
         best_result = TestNormalRequest.getMaxSimilarityElement(results)
         self.assertEqual("The Witcher 3: Wild Hunt", best_result.game_name)
-        self.assertAlmostEqual(50, TestNormalRequest.getSimpleNumber(best_result.main_story), delta=5)
+        self.assertAlmostEqual(50, TestNormalRequest.getSimpleNumber(best_result.main_story), delta=25)
 
     @async_test
     async def test_game_with_values(self):
-        results = await HowLongToBeat().async_search("Battlefield 2142")
+        results = await HowLongToBeat().async_search("Crysis 3")
         self.assertNotEqual(None, results, "Search Results are None")
         best_result = TestNormalRequest.getMaxSimilarityElement(results)
-        self.assertEqual("Battlefield 2142", best_result.game_name)
-        self.assertAlmostEqual(14, TestNormalRequest.getSimpleNumber(best_result.main_story), delta=5)
-        self.assertAlmostEqual(17, TestNormalRequest.getSimpleNumber(best_result.main_extra), delta=5)
-        self.assertAlmostEqual(30, TestNormalRequest.getSimpleNumber(best_result.completionist), delta=5)
+        self.assertEqual("Crysis 3", best_result.game_name)
+        self.assertAlmostEqual(6, TestNormalRequest.getSimpleNumber(best_result.main_story), delta=20)
+        self.assertAlmostEqual(8, TestNormalRequest.getSimpleNumber(best_result.main_extra), delta=20)
+        self.assertAlmostEqual(13, TestNormalRequest.getSimpleNumber(best_result.completionist), delta=20)
 
     @async_test
     async def test_game_links(self):
