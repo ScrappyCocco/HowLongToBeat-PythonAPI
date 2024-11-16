@@ -65,6 +65,11 @@ class HTMLRequests:
                         'min': 0,
                         'max': 0
                     },
+                    'rangeYear':
+                    {
+                        'max': "",
+                        'min': ""
+                    },
                     'gameplay': {
                         'perspective': "",
                         'flow': "",
@@ -73,7 +78,6 @@ class HTMLRequests:
                     'modifier': search_modifiers.value,
                 },
                 'users': {
-                    'id': api_key,
                     'sortCategory': "postcount"
                 },
                 'filter': "",
@@ -81,6 +85,11 @@ class HTMLRequests:
                 'randomizer': 0
             }
         }
+
+        # If api_key is passed add it to the dict
+        if api_key is not None:
+            payload['searchOptions']['users']['id'] = api_key
+
         return json.dumps(payload)
 
     @staticmethod
@@ -97,10 +106,17 @@ class HTMLRequests:
         api_key_result = HTMLRequests.send_website_request_getcode(False)
         if api_key_result is None:
             api_key_result = HTMLRequests.send_website_request_getcode(True)
-        payload = HTMLRequests.get_search_request_data(game_name, search_modifiers, page, api_key_result)
-        # Make the post request and return the result if is valid
-        search_url_with_key = HTMLRequests.SEARCH_URL
+        # Make the request
+        # The main method currently is the call to api/search/key
+        search_url_with_key = HTMLRequests.SEARCH_URL + "/" + api_key_result
+        payload = HTMLRequests.get_search_request_data(game_name, search_modifiers, page, None)
         resp = requests.post(search_url_with_key, headers=headers, data=payload, timeout=60)
+        if resp.status_code == 200:
+            return resp.text
+        # Try to call with the standard url adding the api key to the user
+        search_url = HTMLRequests.SEARCH_URL
+        payload = HTMLRequests.get_search_request_data(game_name, search_modifiers, page, api_key_result)
+        resp = requests.post(search_url, headers=headers, data=payload, timeout=60)
         if resp.status_code == 200:
             return resp.text
         return None
@@ -119,6 +135,22 @@ class HTMLRequests:
         api_key_result = await HTMLRequests.async_send_website_request_getcode(False)
         if api_key_result is None:
             api_key_result = await HTMLRequests.async_send_website_request_getcode(True)
+        # Make the request
+        # The main method currently is the call to api/search/key
+        search_url_with_key = HTMLRequests.SEARCH_URL + "/" + api_key_result
+        payload = HTMLRequests.get_search_request_data(game_name, search_modifiers, page, None)
+        async with aiohttp.ClientSession() as session:
+            async with session.post(search_url_with_key, headers=headers, data=payload) as resp_with_key:
+                if resp_with_key is not None and resp_with_key.status == 200:
+                    return await resp_with_key.text()
+                else:
+                    search_url = HTMLRequests.SEARCH_URL
+                    payload = HTMLRequests.get_search_request_data(game_name, search_modifiers, page, api_key_result)
+                    async with session.post(search_url, headers=headers, data=payload) as resp_user_id:
+                        if resp_user_id is not None and resp_user_id.status == 200:
+                            return await resp_user_id.text()
+                        return None
+
         payload = HTMLRequests.get_search_request_data(game_name, search_modifiers, page, api_key_result)
         # Make the post request and return the result if is valid
         search_url_with_key = HTMLRequests.SEARCH_URL + "/" + api_key_result
@@ -209,10 +241,34 @@ class HTMLRequests:
                 return None
 
     @staticmethod
+    def extract_api_from_script(script_content: str):
+        """
+        Function that extract the htlb code to use in the request from the given script
+        @return: the string of the api key found
+        """
+        # Try multiple find one after the other as hltb keep changing format
+        # Test 1 - The API Key is in the user id in the request json
+        user_id_api_key_pattern = r'users\s*:\s*{\s*id\s*:\s*"([^"]+)"'
+        matches = re.findall(user_id_api_key_pattern, script_content)
+        if matches:
+            key = ''.join(matches)
+            return key
+        # Test 2 - The API Key is in format fetch("/api/search/".concat("X").concat("Y")...
+        concat_api_key_pattern = r'\/api\/search\/"(?:\.concat\("[^"]*"\))*'
+        matches = re.findall(concat_api_key_pattern, script_content)
+        if matches:
+            matches = str(matches).split('.concat')
+            matches = [re.sub(r'["\(\)\[\]\']', '', match) for match in matches[1:]]
+            key = ''.join(matches)
+            return key
+        # Unable to find :(
+        return None
+
+    @staticmethod
     def send_website_request_getcode(parse_all_scripts: bool):
         """
         Function that send a request to howlongtobeat to scrape the /api/search key
-        @return: The string key to use on /api/search
+        @return: The string key to use
         """
         # Make the post request and return the result if is valid
         headers = HTMLRequests.get_title_request_headers()
@@ -230,23 +286,22 @@ class HTMLRequests:
                 script_url = HTMLRequests.BASE_URL + script_url
                 script_resp = requests.get(script_url, headers=headers, timeout=60)
                 if script_resp.status_code == 200 and script_resp.text is not None:
-                    pattern = r'users\s*:\s*{\s*id\s*:\s*"([^"]+)"'
-                    matches = re.findall(pattern, script_resp.text)
-                    for match in matches:
-                        return match
+                    api_key_result = HTMLRequests.extract_api_from_script(script_resp.text)
+                    if api_key_result is not None:
+                        return api_key_result
         return None
 
     @staticmethod
     async def async_send_website_request_getcode(parse_all_scripts: bool):
         """
         Function that send a request to howlongtobeat to scrape the /api/search key
-        @return: The string key to use on /api/search
+        @return: The string key to use
         """
         # Make the post request and return the result if is valid
         headers = HTMLRequests.get_title_request_headers()
         async with aiohttp.ClientSession() as session:
             async with session.get(HTMLRequests.BASE_URL, headers=headers) as resp:
-                if resp is not None and str(resp.status) == "200":
+                if resp is not None and resp.status == 200:
                     resp_text = await resp.text()
                     # Parse the HTML content using BeautifulSoup
                     soup = BeautifulSoup(resp_text, 'html.parser')
@@ -260,12 +315,11 @@ class HTMLRequests:
                         script_url = HTMLRequests.BASE_URL + script_url
                         async with aiohttp.ClientSession() as session:
                             async with session.get(script_url, headers=headers) as script_resp:
-                                if script_resp is not None and str(resp.status) == "200":
+                                if script_resp is not None and resp.status == 200:
                                     script_resp_text = await script_resp.text()
-                                    pattern = r'users\s*:\s*{\s*id\s*:\s*"([^"]+)"'
-                                    matches = re.findall(pattern, script_resp_text)
-                                    for match in matches:
-                                        return match
+                                    api_key_result = HTMLRequests.extract_api_from_script(script_resp_text)
+                                    if api_key_result is not None:
+                                        return api_key_result
                                 else:
                                     return None
                 else:
