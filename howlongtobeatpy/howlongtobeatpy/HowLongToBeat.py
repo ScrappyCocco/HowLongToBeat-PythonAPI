@@ -12,7 +12,8 @@ from .JSONResultParser import JSONResultParser
 class HowLongToBeat:
     """
     Main class that contain the base "search" function
-    The search function is available using standard request or using an async request that MUST be awaited
+    The search function is available using standard request 
+    Or using an async request, remember that request MUST be awaited
     """
 
     # ------------------------------------------
@@ -73,7 +74,7 @@ class HowLongToBeat:
         """
         Function that search the game using an async request
         To re-use code, I extract the game name and search game by name, picking only the game with the same id
-        Remember that this function use 2 requests: one to get the game title and one to get game data
+        Remember that this function use one extra request: one to get the game title and one to get game data
         @param game_id: The game id to get data
         @return: The game data (single HowLongToBeatEntry object) or None in case of error
         """
@@ -84,7 +85,7 @@ class HowLongToBeat:
             html_result = await HTMLRequests.send_async_web_request(game_title)
             if html_result is not None:
                 result_list = self.__parse_web_result(game_title, html_result, game_id)
-                if result_list is None or len(result_list) == 0 or len(result_list) > 1:
+                if result_list is None or len(result_list) != 1:
                     return None
                 return result_list[0]
             return None
@@ -93,7 +94,7 @@ class HowLongToBeat:
     def search_from_id(self, game_id: int):
         """
         To re-use code, I extract the game name and search game by name, picking only the game with the same id
-        Remember that this function use 2 requests: one to get the game title and one to get game data
+        Remember that this function use use one extra request: one to get the game title and one to get game data
         @param game_id: The game id to get data
         @return: The game data (single HowLongToBeatEntry object) None in case of error
         """
@@ -104,7 +105,7 @@ class HowLongToBeat:
             html_result = HTMLRequests.send_web_request(game_title)
             if html_result is not None:
                 result_list = self.__parse_web_result(game_title, html_result, game_id)
-                if result_list is None or len(result_list) == 0 or len(result_list) > 1:
+                if result_list is None or len(result_list) != 1:
                     return None
                 return result_list[0]
             return None

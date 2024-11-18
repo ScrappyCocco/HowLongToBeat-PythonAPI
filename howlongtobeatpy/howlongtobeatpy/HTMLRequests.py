@@ -16,7 +16,11 @@ class SearchModifiers(Enum):
     NONE = ""
     # ISOLATE_DLC shows only DLC in the search result
     ISOLATE_DLC = "only_dlc"
-    # HIDE_DLC hide DLCs in the search result
+    # ISOLATE_MODS shows only MODs
+    ISOLATE_MODS = "only_mods"
+    # ISOLATE_HACKS shows only Hacks
+    ISOLATE_HACKS = "only_hacks"
+    # HIDE_DLC hide DLCs/MODs in the search result
     HIDE_DLC = "hide_dlc"
 
 
@@ -151,15 +155,6 @@ class HTMLRequests:
                             return await resp_user_id.text()
                         return None
 
-        payload = HTMLRequests.get_search_request_data(game_name, search_modifiers, page, api_key_result)
-        # Make the post request and return the result if is valid
-        search_url_with_key = HTMLRequests.SEARCH_URL + "/" + api_key_result
-        async with aiohttp.ClientSession() as session:
-            async with session.post(search_url_with_key, headers=headers, data=payload) as resp:
-                if resp is not None and str(resp.status) == "200":
-                    return await resp.text()
-                return None
-
     @staticmethod
     def __cut_game_title(page_source: str):
         """
@@ -235,7 +230,7 @@ class HTMLRequests:
         # Request and extract title
         async with aiohttp.ClientSession() as session:
             async with session.post(HTMLRequests.GAME_URL, params=params, headers=headers) as resp:
-                if resp is not None and str(resp.status) == "200":
+                if resp is not None and resp.status == 200:
                     text = await resp.text()
                     return HTMLRequests.__cut_game_title(text)
                 return None
