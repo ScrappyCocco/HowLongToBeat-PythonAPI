@@ -69,25 +69,30 @@ class HTMLRequests:
                         'min': 0,
                         'max': 0
                     },
+                    'gameplay': {
+                        'perspective': "",
+                        'flow': "",
+                        'genre': "",
+                        "subGenre": " "
+                    },
                     'rangeYear':
                     {
                         'max': "",
                         'min': ""
-                    },
-                    'gameplay': {
-                        'perspective': "",
-                        'flow': "",
-                        'genre': ""
                     },
                     'modifier': search_modifiers.value,
                 },
                 'users': {
                     'sortCategory': "postcount"
                 },
+                'lists': {
+                    'sortCategory': "follows"
+                },
                 'filter': "",
                 'sort': 0,
                 'randomizer': 0
-            }
+            },
+            'useCache': True
         }
 
         # If api_key is passed add it to the dict
