@@ -73,7 +73,7 @@ class HTMLRequests:
                         'perspective': "",
                         'flow': "",
                         'genre': "",
-                        "subGenre": " "
+                        "subGenre": ""
                     },
                     'rangeYear':
                     {
