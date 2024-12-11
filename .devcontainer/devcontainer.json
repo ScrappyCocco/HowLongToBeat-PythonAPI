@@ -1,0 +1,21 @@
+{
+   "name":"howlongtobeatpy-devcontainer",
+   "image":"mcr.microsoft.com/devcontainers/python:3.9",
+   "features":{
+      
+   },
+   "customizations":{
+      "vscode":{
+         "settings":{
+            
+         },
+         "extensions":[
+            "ms-python.python",
+            "ms-python.debugpy",
+            "ms-python.vscode-pylance",
+            "ms-python.pylint"
+         ]
+      }
+   },
+   "postCreateCommand":"pip3 install -r pytest"
+}
