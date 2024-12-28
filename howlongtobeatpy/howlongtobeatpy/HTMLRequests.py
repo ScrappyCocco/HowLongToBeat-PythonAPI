@@ -27,7 +27,7 @@ class SearchModifiers(Enum):
 class HTMLRequests:
     BASE_URL = 'https://howlongtobeat.com/'
     REFERER_HEADER = BASE_URL
-    SEARCH_URL = BASE_URL + "api/find"
+    SEARCH_URL = BASE_URL + "api/lookup"
     GAME_URL = BASE_URL + "game"
 
     @staticmethod
@@ -116,7 +116,7 @@ class HTMLRequests:
         if api_key_result is None:
             api_key_result = HTMLRequests.send_website_request_getcode(True)
         # Make the request
-        # The main method currently is the call to api/find/key
+        # The main method currently is the call to api/lookup/key
         search_url_with_key = HTMLRequests.SEARCH_URL + "/" + api_key_result
         payload = HTMLRequests.get_search_request_data(game_name, search_modifiers, page, None)
         resp = requests.post(search_url_with_key, headers=headers, data=payload, timeout=60)
@@ -145,7 +145,7 @@ class HTMLRequests:
         if api_key_result is None:
             api_key_result = await HTMLRequests.async_send_website_request_getcode(True)
         # Make the request
-        # The main method currently is the call to api/find/key
+        # The main method currently is the call to api/lookup/key
         search_url_with_key = HTMLRequests.SEARCH_URL + "/" + api_key_result
         payload = HTMLRequests.get_search_request_data(game_name, search_modifiers, page, None)
         async with aiohttp.ClientSession() as session:
@@ -253,8 +253,8 @@ class HTMLRequests:
         if matches:
             key = ''.join(matches)
             return key
-        # Test 2 - The API Key is in format fetch("/api/find/".concat("X").concat("Y")...
-        concat_api_key_pattern = r'\/api\/find\/"(?:\.concat\("[^"]*"\))*'
+        # Test 2 - The API Key is in format fetch("/api/lookup/".concat("X").concat("Y")...
+        concat_api_key_pattern = r'\/api\/lookup\/"(?:\.concat\("[^"]*"\))*'
         matches = re.findall(concat_api_key_pattern, script_content)
         if matches:
             matches = str(matches).split('.concat')
@@ -267,7 +267,7 @@ class HTMLRequests:
     @staticmethod
     def send_website_request_getcode(parse_all_scripts: bool):
         """
-        Function that send a request to howlongtobeat to scrape the /api/find key
+        Function that send a request to howlongtobeat to scrape the /api/lookup key
         @return: The string key to use
         """
         # Make the post request and return the result if is valid
@@ -294,7 +294,7 @@ class HTMLRequests:
     @staticmethod
     async def async_send_website_request_getcode(parse_all_scripts: bool):
         """
-        Function that send a request to howlongtobeat to scrape the /api/find key
+        Function that send a request to howlongtobeat to scrape the /api/lookup key
         @return: The string key to use
         """
         # Make the post request and return the result if is valid
