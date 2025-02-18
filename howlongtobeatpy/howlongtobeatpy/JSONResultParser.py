@@ -20,12 +20,17 @@ class JSONResultParser:
 
     def __init__(self, input_game_name: str, input_game_url: str,
                  input_minimum_similarity: float, input_game_id: int = None,
-                 input_similarity_case_sensitive: bool = True):
+                 input_similarity_case_sensitive: bool = True,
+                 input_auto_filter_times: bool = False):
         # Init instance variables
         self.results = []
         self.minimum_similarity = input_minimum_similarity
         self.similarity_case_sensitive = input_similarity_case_sensitive
+        self.auto_filter_times = input_auto_filter_times
         self.game_id = input_game_id
+        if self.game_id is not None:
+            self.minimum_similarity = 0
+            self.similarity_case_sensitive = False
         self.base_game_url = input_game_url
         # Init object
         self.game_name = input_game_name
@@ -75,6 +80,26 @@ class JSONResultParser:
             current_entry.completionist = round(input_game_element.get("comp_100") / 3600, 2)
         if "comp_all" in input_game_element:
             current_entry.all_styles = round(input_game_element.get("comp_all") / 3600, 2)
+        if "invested_co" in input_game_element:
+            current_entry.coop_time = round(input_game_element.get("invested_co") / 3600, 2)
+        if "invested_mp" in input_game_element:
+            current_entry.mp_time = round(input_game_element.get("invested_mp") / 3600, 2)
+        # Add complexity booleans
+        current_entry.complexity_lvl_combine = bool(input_game_element.get("comp_lvl_combine", 0))
+        current_entry.complexity_lvl_sp = bool(input_game_element.get("comp_lvl_sp", 0))
+        current_entry.complexity_lvl_co = bool(input_game_element.get("comp_lvl_co", 0))
+        current_entry.complexity_lvl_mp = bool(input_game_element.get("comp_lvl_mp", 0))
+        # Auto-Nullify values based on the flags
+        if self.auto_filter_times:
+            if current_entry.complexity_lvl_sp is False:
+                current_entry.main_story = None
+                current_entry.main_extra = None
+                current_entry.completionist = None
+                current_entry.all_styles = None
+            if current_entry.complexity_lvl_co is False:
+                current_entry.coop_time = None
+            if current_entry.complexity_lvl_mp is False:
+                current_entry.mp_time = None
         # Compute Similarity
         game_name_similarity = self.similar(self.game_name, current_entry.game_name,
                                             self.game_name_numbers, self.similarity_case_sensitive)

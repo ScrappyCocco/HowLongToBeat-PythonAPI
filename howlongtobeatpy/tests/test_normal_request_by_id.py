@@ -31,6 +31,13 @@ class TestNormalRequestById(TestCase):
         self.assertEqual("The Witcher 3: Wild Hunt", result.game_name)
         self.assertAlmostEqual(50, TestNormalRequest.getSimpleNumber(result.main_story), delta=5)
 
+    def test_game_with_auto_filter(self):
+        result = HowLongToBeat(input_auto_filter_times = True).search_from_id(10270)
+        self.assertNotEqual(None, result, "Search Result is None")
+        self.assertEqual("The Witcher 3: Wild Hunt", result.game_name)
+        self.assertEqual(None, result.coop_time)
+        self.assertEqual(None, result.mp_time)
+
     def test_game_with_values(self):
         result = HowLongToBeat().search_from_id(936)
         self.assertNotEqual(None, result, "Search Result is None")

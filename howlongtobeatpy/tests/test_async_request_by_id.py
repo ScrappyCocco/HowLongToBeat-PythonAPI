@@ -37,6 +37,14 @@ class TestAsyncRequestById(TestCase):
         self.assertAlmostEqual(50, TestNormalRequest.getSimpleNumber(result.main_story), delta=25)
 
     @async_test
+    async def test_game_with_auto_filter(self):
+        result = await HowLongToBeat(input_auto_filter_times = True).async_search_from_id(10270)
+        self.assertNotEqual(None, result, "Search Result is None")
+        self.assertEqual("The Witcher 3: Wild Hunt", result.game_name)
+        self.assertEqual(None, result.coop_time)
+        self.assertEqual(None, result.mp_time)
+
+    @async_test
     async def test_game_with_values(self):
         result = await HowLongToBeat().async_search_from_id(2070)
         self.assertNotEqual(None, result, "Search Results are None")

@@ -12,20 +12,22 @@ It is inspired by [ckatzorke - howlongtobeat](https://github.com/ckatzorke/howlo
 
 ## Content
 
-- [Usage](#usage)
-- [Installation](#installation)
-  - [Installing the package downloading the last release](#installing-the-package-downloading-the-last-release)
-  - [Installing the package from the source code](#installing-the-package-from-the-source-code)
-- [Usage in code](#usage-in-code)
-  - [Start including it in your file](#start-including-it-in-your-file)
-  - [Now call search()](#now-call-search)
-  - [Alternative search (by ID)](#alternative-search-by-id)
-  - [DLC search](#dlc-search)
-  - [Results auto-filter](#results-auto-filter)
-  - [Reading an entry](#reading-an-entry)
-- [Issues, Questions & Discussions](#issues-questions--discussions)
-- [Authors](#authors)
-- [License](#license)
+- [HowLongToBeat Python API](#howlongtobeat-python-api)
+  - [Content](#content)
+  - [Usage](#usage)
+  - [Installation](#installation)
+    - [Installing the package downloading the last release](#installing-the-package-downloading-the-last-release)
+    - [Installing the package from the source code](#installing-the-package-from-the-source-code)
+  - [Usage in code](#usage-in-code)
+    - [Start including it in your file](#start-including-it-in-your-file)
+    - [Now call search()](#now-call-search)
+    - [Alternative search (by ID)](#alternative-search-by-id)
+    - [DLC search](#dlc-search)
+    - [Results auto-filters](#results-auto-filters)
+    - [Reading an entry](#reading-an-entry)
+  - [Issues, Questions \& Discussions](#issues-questions--discussions)
+  - [Authors](#authors)
+  - [License](#license)
 
 ## Usage
 
@@ -114,7 +116,7 @@ SearchModifiers.HIDE_DLC
 
 This optional parameter allow you to specify in the search if you want the default search (with DLCs), to HIDE DLCs and only show games, or to ISOLATE DLCs (show only DLCs).
 
-### Results auto-filter
+### Results auto-filters
 
 To ignore games with a very different name, the standard search automatically filter results with a game name that has a similarity with the given name > than `0.4`, not adding the others to the result list.
 If you want all the results, or you want to change this value, you can put a parameter in the constructor:
@@ -133,6 +135,14 @@ results = HowLongToBeat(0.0).search("Awesome Game", similarity_case_sensitive=Fa
 
 **Remember** that, when searching by ID, the similarity value and the case-sensitive bool are **ignored**.
 
+An auto-filter for game-types has been added, it is not active by default (False) but can be used as:
+
+```python
+results = HowLongToBeat(input_auto_filter_times = True).search("The Witcher 3")
+```
+
+That auto-filter "nullify" values based on the game-type, if it is a singleplayer game then the coop/multiplayer values are overridden to Null; on the other side if it is a Multiplayer game the singleplayer values such as "main story" could be overridden to Null if that game doesn't have a story. Use with caution, it is probably better if you decide what fits best for you.
+
 ### Reading an entry
 
 An entry is made of few values, you can check them [in the Entry class file](https://github.com/ScrappyCocco/HowLongToBeat-PythonAPI/blob/master/howlongtobeatpy/howlongtobeatpy/HowLongToBeatEntry.py). It also include the full JSON of values (already converted to Python dict) received from HLTB.
@@ -145,7 +155,7 @@ If you need any new feature, or want to discuss the current implementation/featu
 
 ## Authors
 
-* **ScrappyCocco** - Thank you for using my API
+- **ScrappyCocco** - Thank you for using my API
 
 ## License
 

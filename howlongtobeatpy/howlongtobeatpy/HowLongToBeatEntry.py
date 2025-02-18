@@ -43,3 +43,13 @@ class HowLongToBeatEntry:
         self.completionist = None
         # All styles
         self.all_styles = None
+        # invested_co value
+        self.coop_time = None
+        # invested_mp value
+        self.mp_time = None
+        # These are used to identify if the game has singpe, coop and/or multiplayer
+        # So you can filter data based on those
+        self.complexity_lvl_combine = False
+        self.complexity_lvl_sp = False
+        self.complexity_lvl_co = False
+        self.complexity_lvl_mp = False

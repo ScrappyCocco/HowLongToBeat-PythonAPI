@@ -43,6 +43,35 @@ class TestAsyncRequest(TestCase):
         self.assertAlmostEqual(50, TestNormalRequest.getSimpleNumber(best_result.main_story), delta=25)
 
     @async_test
+    async def test_game_with_auto_filter(self):
+        results = await HowLongToBeat(input_auto_filter_times = True).async_search("The Witcher 3")
+        self.assertNotEqual(None, results, "Search Results are None")
+        best_result = TestNormalRequest.getMaxSimilarityElement(results)
+        self.assertEqual("The Witcher 3: Wild Hunt", best_result.game_name)
+        self.assertEqual(None, best_result.coop_time)
+        self.assertEqual(None, best_result.mp_time)
+
+    @async_test
+    async def test_multiplayer_game_with_auto_filter(self):
+        results = await HowLongToBeat(input_auto_filter_times = True).async_search("Overwatch")
+        self.assertNotEqual(None, results, "Search Results are None")
+        best_result = TestNormalRequest.getMaxSimilarityElement(results)
+        self.assertEqual("Overwatch", best_result.game_name)
+        self.assertEqual(None, best_result.main_story)
+        self.assertEqual(None, best_result.main_extra)
+        self.assertEqual(None, best_result.completionist)
+
+    @async_test
+    async def test_multiplayer_game_with_no_auto_filter(self):
+        results = await HowLongToBeat(input_auto_filter_times = False).async_search("Overwatch")
+        self.assertNotEqual(None, results, "Search Results are None")
+        best_result = TestNormalRequest.getMaxSimilarityElement(results)
+        self.assertEqual("Overwatch", best_result.game_name)
+        self.assertNotEqual(None, best_result.main_story)
+        self.assertNotEqual(None, best_result.main_extra)
+        self.assertNotEqual(None, best_result.completionist)
+
+    @async_test
     async def test_game_with_values(self):
         results = await HowLongToBeat().async_search("Crysis 3")
         self.assertNotEqual(None, results, "Search Results are None")
