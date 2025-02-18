@@ -67,6 +67,24 @@ class TestNormalRequest(TestCase):
         self.assertEqual(None, best_result.coop_time)
         self.assertEqual(None, best_result.mp_time)
 
+    def test_multiplayer_game_with_auto_filter(self):
+        results = HowLongToBeat(input_auto_filter_times = True).search("Overwatch")
+        self.assertNotEqual(None, results, "Search Results are None")
+        best_result = self.getMaxSimilarityElement(results)
+        self.assertEqual("Overwatch", best_result.game_name)
+        self.assertEqual(None, best_result.main_story)
+        self.assertEqual(None, best_result.main_extra)
+        self.assertEqual(None, best_result.completionist)
+
+    def test_multiplayer_game_with_no_auto_filter(self):
+        results = HowLongToBeat(input_auto_filter_times = False).search("Overwatch")
+        self.assertNotEqual(None, results, "Search Results are None")
+        best_result = self.getMaxSimilarityElement(results)
+        self.assertEqual("Overwatch", best_result.game_name)
+        self.assertNotEqual(None, best_result.main_story)
+        self.assertNotEqual(None, best_result.main_extra)
+        self.assertNotEqual(None, best_result.completionist)
+
     def test_game_with_values(self):
         results = HowLongToBeat().search("Battlefield 2142")
         self.assertNotEqual(None, results, "Search Results are None")
