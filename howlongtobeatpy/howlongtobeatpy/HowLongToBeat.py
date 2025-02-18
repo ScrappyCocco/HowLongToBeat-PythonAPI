@@ -20,12 +20,14 @@ class HowLongToBeat:
     # Constructor with optional parameters
     # ------------------------------------------
 
-    def __init__(self, input_minimum_similarity: float = 0.4):
+    def __init__(self, input_minimum_similarity: float = 0.4, input_auto_filter_times: bool = False):
         """
         @param input_minimum_similarity: Minimum similarity to use to filter the results with the found name,
+        @param input_auto_filter_times: If the json parser should automatically filter times based on the game types (online/sp)
         0 will return all the results; 1 means perfectly equal and should not be used; default is 0.4;
         """
         self.minimum_similarity = input_minimum_similarity
+        self.auto_filter_times = input_auto_filter_times
 
         if platform.system() == 'Windows':
             asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
@@ -126,11 +128,11 @@ class HowLongToBeat:
         """
         if game_id is None:
             parser = JSONResultParser(game_name, HTMLRequests.GAME_URL, self.minimum_similarity, game_id,
-                                      similarity_case_sensitive)
+                                      similarity_case_sensitive, self.auto_filter_times)
         else:
             # If the search is by id, ignore class minimum_similarity and set it to 0.0
             # The result is filtered by ID anyway, so the similarity shouldn't count too much
             # Also ignore similarity_case_sensitive and leave default value
-            parser = JSONResultParser(game_name, HTMLRequests.GAME_URL, 0.0, game_id)
+            parser = JSONResultParser(game_name, HTMLRequests.GAME_URL, 0.0, game_id, False, self.auto_filter_times)
         parser.parse_json_result(html_result)
         return parser.results
