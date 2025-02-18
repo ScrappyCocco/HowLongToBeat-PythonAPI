@@ -28,6 +28,9 @@ class JSONResultParser:
         self.similarity_case_sensitive = input_similarity_case_sensitive
         self.auto_filter_times = input_auto_filter_times
         self.game_id = input_game_id
+        if self.game_id is not None:
+            self.minimum_similarity = 0
+            self.similarity_case_sensitive = False
         self.base_game_url = input_game_url
         # Init object
         self.game_name = input_game_name

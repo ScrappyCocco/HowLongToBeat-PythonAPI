@@ -49,7 +49,7 @@ class HowLongToBeat:
             return None
         html_result = await HTMLRequests.send_async_web_request(game_name, search_modifiers)
         if html_result is not None:
-            return self.__parse_web_result(game_name, html_result, None, similarity_case_sensitive)
+            return self.__parse_web_result(game_name, html_result, input_similarity_case_sensitive = similarity_case_sensitive)
         return None
 
     def search(self, game_name: str, search_modifiers: SearchModifiers = SearchModifiers.NONE,
@@ -65,7 +65,7 @@ class HowLongToBeat:
             return None
         html_result = HTMLRequests.send_web_request(game_name, search_modifiers)
         if html_result is not None:
-            return self.__parse_web_result(game_name, html_result, None, similarity_case_sensitive)
+            return self.__parse_web_result(game_name, html_result, input_similarity_case_sensitive = similarity_case_sensitive)
         return None
 
     # ------------------------------------------
@@ -118,7 +118,7 @@ class HowLongToBeat:
     # ------------------------------------------
 
     def __parse_web_result(self, game_name: str, html_result, game_id=None,
-                           similarity_case_sensitive: bool = True):
+                           input_similarity_case_sensitive: bool = True):
         """
         Function that call the HTML parser to get the data
         @param game_name: The original game name received as input
@@ -128,11 +128,11 @@ class HowLongToBeat:
         """
         if game_id is None:
             parser = JSONResultParser(game_name, HTMLRequests.GAME_URL, self.minimum_similarity, game_id,
-                                      similarity_case_sensitive, self.auto_filter_times)
+                                      input_similarity_case_sensitive, self.auto_filter_times)
         else:
-            # If the search is by id, ignore class minimum_similarity and set it to 0.0
+            # If the search is by id, minimum_similarity and similarity_case_sensitive are reset inside
             # The result is filtered by ID anyway, so the similarity shouldn't count too much
-            # Also ignore similarity_case_sensitive and leave default value
-            parser = JSONResultParser(game_name, HTMLRequests.GAME_URL, 0.0, game_id, False, self.auto_filter_times)
+            parser = JSONResultParser(game_name, HTMLRequests.GAME_URL, self.minimum_similarity, 
+                                      input_game_id = game_id, input_auto_filter_times = self.auto_filter_times)
         parser.parse_json_result(html_result)
         return parser.results
