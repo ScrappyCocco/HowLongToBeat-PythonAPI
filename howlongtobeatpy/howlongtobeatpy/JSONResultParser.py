@@ -91,14 +91,14 @@ class JSONResultParser:
         current_entry.complexity_lvl_mp = bool(input_game_element.get("comp_lvl_mp", 0))
         # Auto-Nullify values based on the flags
         if self.auto_filter_times:
-            if current_entry.complexity_lvl_sp is False:
+            if not current_entry.complexity_lvl_sp:
                 current_entry.main_story = None
                 current_entry.main_extra = None
                 current_entry.completionist = None
                 current_entry.all_styles = None
-            if current_entry.complexity_lvl_co is False:
+            if not current_entry.complexity_lvl_co:
                 current_entry.coop_time = None
-            if current_entry.complexity_lvl_mp is False:
+            if not current_entry.complexity_lvl_mp:
                 current_entry.mp_time = None
         # Compute Similarity
         game_name_similarity = self.similar(self.game_name, current_entry.game_name,
