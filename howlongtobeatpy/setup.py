@@ -14,10 +14,10 @@ setup(name='howlongtobeatpy',
       license='MIT',
       keywords='howlongtobeat gaming steam uplay origin time length how long to beat',
       install_requires=[
-          'aiohttp>=3.11.10',
-          'requests>=2.32.3',
-          'aiounittest>=1.4.2',
-          'fake_useragent>=2.0.3',
-          'beautifulsoup4>=4.12.3'
+          'aiohttp~=3.12',
+          'requests~=2.32',
+          'aiounittest~=1.5',
+          'fake_useragent~=2.2',
+          'beautifulsoup4~=4.13'
       ],
       zip_safe=False)
