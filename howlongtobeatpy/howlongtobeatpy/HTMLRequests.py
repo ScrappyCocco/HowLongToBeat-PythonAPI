@@ -38,18 +38,18 @@ class SearchInformations:
         """
         Function that finds the 'fetch' call using 'method: "POST"', 
         extracts the base endpoint path, and returns the full '/api/path' 
-        string (e.g., "/api/search").
+        string (e.g., "/api/search" or "/api/finder").
         
-        This avoids relying on the exact string "search" by confirming 
+        This avoids relying on the exact string by confirming 
         the use of the POST method, which identifies the actual search endpoint.
         
         @return: The full API endpoint string (e.g., "/api/search") or None.
         """
         # Pattern explanation:
-        # 1. Capture Group 1: Matches the path suffix (e.g., "search" or "find").
+        # 1. Capture Group 1: Matches the path suffix (e.g., "search", "find", "finder").
         # 2. Ensures the request options contain 'method: "POST"' to filter out the GET init call.
         pattern = re.compile(
-            # Capture Group 1: The path suffix after /api/ (e.g., "search" or "find/v2")
+            # Capture Group 1: The path suffix after /api/ (e.g., "search", "find", "finder")
             r'fetch\s*\(\s*["\']/api/([a-zA-Z0-9_/]+)[^"\']*["\']\s*,\s*{[^}]*method:\s*["\']POST["\'][^}]*}',
             re.DOTALL | re.IGNORECASE
         )
@@ -57,7 +57,7 @@ class SearchInformations:
         match = pattern.search(script_content)
         
         if match:
-            # Example captured string: "search" or "find/v2"
+            # Example captured string: "search", "find", "finder", or "find/v2"
             path_suffix = match.group(1)
             
             # Determine the root path (e.g., "search" from "search/v2")
@@ -66,17 +66,17 @@ class SearchInformations:
                 base_path = path_suffix.split('/')[0]
             else:
                 base_path = path_suffix
-                
-            if base_path != "find":
-                full_endpoint = f"/api/{base_path}"
             
-                return full_endpoint
+            # Accept any endpoint variant (search, find, finder, etc.)
+            full_endpoint = f"/api/{base_path}"
+            return full_endpoint
                 
         return None
 
 
 class SearchAuthToken:
-    search_url = "api/search/init"
+    search_url = "api/s"
+    search_url_endpoint = "/init"
     auth_token = None
 
     def extract_auth_token_from_response(self, response_content: requests.Response):
@@ -179,12 +179,18 @@ class HTMLRequests:
         @param page: The page to explore of the research, unknown if this is actually used
         @return: The HTML code of the research if the request returned 200(OK), None otherwise
         """
-        auth_token = HTMLRequests.send_website_get_auth_token()
-        headers = HTMLRequests.get_search_request_headers(auth_token)
+        # Retrieve the updated URL
         search_info_data = HTMLRequests.send_website_request_getcode(False)
         if search_info_data is None or search_info_data.search_url is None:
             search_info_data = HTMLRequests.send_website_request_getcode(True)
+        # Retrieve the request auth token
+        auth_token = None
+        if search_info_data is not None and search_info_data.search_url is not None:
+            auth_token = HTMLRequests.send_website_get_auth_token(search_info_data.search_url)
+        else:
+            auth_token = HTMLRequests.send_website_get_auth_token(None)
         # Make the request
+        headers = HTMLRequests.get_search_request_headers(auth_token)
         if search_info_data is not None and search_info_data.search_url is not None:
             HTMLRequests.SEARCH_URL = HTMLRequests.BASE_URL + search_info_data.search_url
         payload = HTMLRequests.get_search_request_data(game_name, search_modifiers, page)
@@ -203,12 +209,18 @@ class HTMLRequests:
         @param page: The page to explore of the research, unknown if this is actually used
         @return: The HTML code of the research if the request returned 200(OK), None otherwise
         """
-        auth_token = await HTMLRequests.async_send_website_get_auth_token()
-        headers = HTMLRequests.get_search_request_headers(auth_token)
+        # Retrieve the updated URL
         search_info_data = HTMLRequests.send_website_request_getcode(False)
         if search_info_data is None or search_info_data.search_url is None:
             search_info_data = HTMLRequests.send_website_request_getcode(True)
+        # Retrieve the request auth token
+        auth_token = None
+        if search_info_data is not None and search_info_data.search_url is not None:
+            auth_token = await HTMLRequests.async_send_website_get_auth_token(search_info_data.search_url)
+        else:
+            auth_token = await HTMLRequests.async_send_website_get_auth_token(None)
         # Make the request
+        headers = HTMLRequests.get_search_request_headers(auth_token)
         if search_info_data is not None and search_info_data.search_url is not None:
             HTMLRequests.SEARCH_URL = HTMLRequests.BASE_URL + search_info_data.search_url
         payload = HTMLRequests.get_search_request_data(game_name, search_modifiers, page)
@@ -377,7 +389,7 @@ class HTMLRequests:
         return params       
 
     @staticmethod
-    def send_website_get_auth_token():
+    def send_website_get_auth_token(parsed_search_url):
         """
         Function that send a request to howlongtobeat to get the x-auth-token to get in the request
         @return: The auth token to use
@@ -386,14 +398,18 @@ class HTMLRequests:
         headers = HTMLRequests.get_title_request_headers()
         params = HTMLRequests.get_auth_token_request_params()
         auth_token = SearchAuthToken()
-        auth_token_url = HTMLRequests.BASE_URL + auth_token.search_url
+        auth_token_url = HTMLRequests.BASE_URL
+        if parsed_search_url is not None:
+            auth_token_url = HTMLRequests.BASE_URL + parsed_search_url + auth_token.search_url_endpoint
+        else:
+            auth_token_url = HTMLRequests.BASE_URL + auth_token.search_url + auth_token.search_url_endpoint
         resp = requests.get(auth_token_url, params=params, headers=headers, timeout=60)
         if resp.status_code == 200 and resp.text is not None:
             return auth_token.extract_auth_token_from_response(resp)
         return None
 
     @staticmethod
-    async def async_send_website_get_auth_token():
+    async def async_send_website_get_auth_token(parsed_search_url):
         """
         Function that send a request to howlongtobeat to get the x-auth-token to get in the request
         @return: The auth token to use
@@ -402,7 +418,11 @@ class HTMLRequests:
         headers = HTMLRequests.get_title_request_headers()
         params = HTMLRequests.get_auth_token_request_params()
         auth_token = SearchAuthToken()
-        auth_token_url = HTMLRequests.BASE_URL + auth_token.search_url
+        auth_token_url = HTMLRequests.BASE_URL
+        if parsed_search_url is not None:
+            auth_token_url = HTMLRequests.BASE_URL + parsed_search_url + auth_token.search_url_endpoint
+        else:
+            auth_token_url = HTMLRequests.BASE_URL + auth_token.search_url + auth_token.search_url_endpoint
         timeout = aiohttp.ClientTimeout(total=60)
         async with aiohttp.ClientSession() as session:
             async with session.get(auth_token_url, params=params, headers=headers, timeout=timeout) as resp:
