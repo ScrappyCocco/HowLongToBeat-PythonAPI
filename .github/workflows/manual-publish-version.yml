@@ -40,12 +40,18 @@ jobs:
       url: https://pypi.org/p/howlongtobeatpy
     permissions:
       id-token: write  # IMPORTANT: mandatory for trusted publishing
+      attestations: write
+      artifact-metadata: write
     steps:
     - name: Download all the dists
       uses: actions/download-artifact@v8
       with:
         name: python-package-distributions
         path: dist/
+    - name: Attest build provenance
+      uses: actions/attest@v4
+      with:
+        subject-path: dist/
     - name: Publish distribution 📦 to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
         
