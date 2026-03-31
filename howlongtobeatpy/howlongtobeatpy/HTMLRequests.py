@@ -107,6 +107,7 @@ class HTMLRequests:
     GAME_URL = BASE_URL + "game"
     # Static search url to use in case it can't be extracted from JS code
     SEARCH_URL = BASE_URL + "api/s/"
+    HTML_PARSER = 'html.parser'
 
     @staticmethod
     def get_search_request_headers(auth_struct, user_agent):
@@ -266,7 +267,7 @@ class HTMLRequests:
         if page_source is None or len(page_source) == 0:
             return None
 
-        soup = BeautifulSoup(page_source, 'html.parser')
+        soup = BeautifulSoup(page_source, HTMLRequests.HTML_PARSER)
         title_tag = soup.title
         title_text = title_tag.string
 
@@ -352,7 +353,7 @@ class HTMLRequests:
         resp = requests.get(HTMLRequests.BASE_URL, headers=headers, timeout=60)
         if resp.status_code == 200 and resp.text is not None:
             # Parse the HTML content using BeautifulSoup
-            soup = BeautifulSoup(resp.text, 'html.parser')
+            soup = BeautifulSoup(resp.text, HTMLRequests.HTML_PARSER)
             # Find all <script> tags with a src attribute containing the substring
             scripts = soup.find_all('script', src=True)
             if parse_all_scripts:
@@ -382,7 +383,7 @@ class HTMLRequests:
                 if resp is not None and resp.status == 200:
                     resp_text = await resp.text()
                     # Parse the HTML content using BeautifulSoup
-                    soup = BeautifulSoup(resp_text, 'html.parser')
+                    soup = BeautifulSoup(resp_text, HTMLRequests.HTML_PARSER)
                     # Find all <script> tags with a src attribute containing the substring
                     scripts = soup.find_all('script', src=True)
                     if parse_all_scripts:

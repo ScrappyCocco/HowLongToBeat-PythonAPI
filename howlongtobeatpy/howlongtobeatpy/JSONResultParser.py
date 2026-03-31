@@ -3,8 +3,9 @@
 
 import json
 import re
-from .HowLongToBeatEntry import HowLongToBeatEntry
+import math
 from difflib import SequenceMatcher
+from .HowLongToBeatEntry import HowLongToBeatEntry
 
 # ---------------------------------------------------------------------
 
@@ -47,7 +48,7 @@ class JSONResultParser:
             if self.game_id is not None and str(new_game_entry.game_id) != str(self.game_id):
                 continue
             # Minimum Similarity is 0 so just add it straight away
-            elif self.minimum_similarity == 0.0:
+            elif math.isclose(self.minimum_similarity, 0.0, abs_tol=1e-9):
                 self.results.append(new_game_entry)
             # Add it if it respects the minimum similarity
             elif new_game_entry.similarity >= self.minimum_similarity:
