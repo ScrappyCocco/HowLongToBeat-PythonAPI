@@ -78,6 +78,8 @@ class SearchAuthToken:
     search_url = "api/s"
     search_url_endpoint = "/init"
     auth_token = None
+    auth_key = None
+    auth_value = None
 
     def extract_auth_token_from_response(self, response_content: requests.Response):
         """
@@ -89,7 +91,15 @@ class SearchAuthToken:
     
     def extract_auth_token_from_json(self, json_content):
         self.auth_token = json_content.get('token')
-        return self.auth_token
+
+        for field_name, field_value in json_content.items():
+            lower = field_name.lower()
+            if re.search(r'key', lower):
+                self.auth_key = field_value
+            elif re.search(r'val', lower):
+                self.auth_value = field_value
+
+        return self
 
 class HTMLRequests:
     BASE_URL = 'https://howlongtobeat.com/'
@@ -99,26 +109,28 @@ class HTMLRequests:
     SEARCH_URL = BASE_URL + "api/s/"
 
     @staticmethod
-    def get_search_request_headers(auth_token = None):
+    def get_search_request_headers(auth_struct, user_agent):
         """
         Generate the headers for the search request
         @return: The headers object for the request
         """
-        ua = UserAgent()
         headers = {
             'content-type': 'application/json',
             'accept': '*/*',
-            'User-Agent': ua.random.strip(),
-            'referer': HTMLRequests.REFERER_HEADER
+            'User-Agent': user_agent,
+            'Referer': HTMLRequests.REFERER_HEADER,
+            'Origin': HTMLRequests.REFERER_HEADER
         }
 
-        if auth_token is not None:
-            headers['x-auth-token'] = str(auth_token)
+        if auth_struct is not None:
+            headers['x-auth-token'] = str(auth_struct.auth_token)
+            headers['x-hp-key'] = str(auth_struct.auth_key)
+            headers['x-hp-val'] = str(auth_struct.auth_value)
 
         return headers
 
     @staticmethod
-    def get_search_request_data(game_name: str, search_modifiers: SearchModifiers, page: int):
+    def get_search_request_data(game_name: str, search_modifiers: SearchModifiers, page: int, auth_struct):
         """
         Generate the data payload for the search request
         @param game_name: The name of the game to search
@@ -167,6 +179,9 @@ class HTMLRequests:
             'useCache': True
         }
 
+        if auth_struct is not None:
+            payload[auth_struct.auth_key] = auth_struct.auth_value
+
         return json.dumps(payload)
 
     @staticmethod
@@ -179,21 +194,24 @@ class HTMLRequests:
         @param page: The page to explore of the research, unknown if this is actually used
         @return: The HTML code of the research if the request returned 200(OK), None otherwise
         """
+        # Generate a single user agent to use for the whole request
+        ua = UserAgent()
+        request_user_agent = ua.random.strip()
         # Retrieve the updated URL
-        search_info_data = HTMLRequests.send_website_request_getcode(False)
+        search_info_data = HTMLRequests.send_website_request_getcode(False, request_user_agent)
         if search_info_data is None or search_info_data.search_url is None:
-            search_info_data = HTMLRequests.send_website_request_getcode(True)
+            search_info_data = HTMLRequests.send_website_request_getcode(True, request_user_agent)
         # Retrieve the request auth token
-        auth_token = None
+        auth_struct = None
         if search_info_data is not None and search_info_data.search_url is not None:
-            auth_token = HTMLRequests.send_website_get_auth_token(search_info_data.search_url)
+            auth_struct = HTMLRequests.send_website_get_auth_token(search_info_data.search_url, request_user_agent)
         else:
-            auth_token = HTMLRequests.send_website_get_auth_token(None)
+            auth_struct = HTMLRequests.send_website_get_auth_token(None, request_user_agent)
         # Make the request
-        headers = HTMLRequests.get_search_request_headers(auth_token)
+        headers = HTMLRequests.get_search_request_headers(auth_struct, request_user_agent)
         if search_info_data is not None and search_info_data.search_url is not None:
             HTMLRequests.SEARCH_URL = HTMLRequests.BASE_URL + search_info_data.search_url
-        payload = HTMLRequests.get_search_request_data(game_name, search_modifiers, page)
+        payload = HTMLRequests.get_search_request_data(game_name, search_modifiers, page, auth_struct)
         resp = requests.post(HTMLRequests.SEARCH_URL, headers=headers, data=payload, timeout=60)
         if resp.status_code == 200:
             return resp.text
@@ -209,21 +227,24 @@ class HTMLRequests:
         @param page: The page to explore of the research, unknown if this is actually used
         @return: The HTML code of the research if the request returned 200(OK), None otherwise
         """
+        # Generate a single user agent to use for the whole request
+        ua = UserAgent()
+        request_user_agent = ua.random.strip()
         # Retrieve the updated URL
-        search_info_data = HTMLRequests.send_website_request_getcode(False)
+        search_info_data = HTMLRequests.send_website_request_getcode(False, request_user_agent)
         if search_info_data is None or search_info_data.search_url is None:
-            search_info_data = HTMLRequests.send_website_request_getcode(True)
+            search_info_data = HTMLRequests.send_website_request_getcode(True, request_user_agent)
         # Retrieve the request auth token
-        auth_token = None
+        auth_struct = None
         if search_info_data is not None and search_info_data.search_url is not None:
-            auth_token = await HTMLRequests.async_send_website_get_auth_token(search_info_data.search_url)
+            auth_struct = await HTMLRequests.async_send_website_get_auth_token(search_info_data.search_url, request_user_agent)
         else:
-            auth_token = await HTMLRequests.async_send_website_get_auth_token(None)
+            auth_struct = await HTMLRequests.async_send_website_get_auth_token(None, request_user_agent)
         # Make the request
-        headers = HTMLRequests.get_search_request_headers(auth_token)
+        headers = HTMLRequests.get_search_request_headers(auth_struct, request_user_agent)
         if search_info_data is not None and search_info_data.search_url is not None:
             HTMLRequests.SEARCH_URL = HTMLRequests.BASE_URL + search_info_data.search_url
-        payload = HTMLRequests.get_search_request_data(game_name, search_modifiers, page)
+        payload = HTMLRequests.get_search_request_data(game_name, search_modifiers, page, auth_struct)
         timeout = aiohttp.ClientTimeout(total=60)
         async with aiohttp.ClientSession() as session:
             async with session.post(HTMLRequests.SEARCH_URL, headers=headers, data=payload, timeout=timeout) as resp_with_key:
@@ -266,14 +287,13 @@ class HTMLRequests:
         return params
 
     @staticmethod
-    def get_title_request_headers():
+    def get_title_request_headers(user_agent):
         """
         Generate the headers for the search request
         @return: The headers object for the request
         """
-        ua = UserAgent()
         headers = {
-            'User-Agent': ua.random,
+            'User-Agent': user_agent,
             'referer': HTMLRequests.REFERER_HEADER
         }
         return headers
@@ -286,8 +306,12 @@ class HTMLRequests:
         @return: The game title from the given id
         """
 
+        # This is a request to get the game title so we can generate a UserAgent
+        ua = UserAgent()
+        request_user_agent = ua.random.strip()
+
         params = HTMLRequests.get_title_request_parameters(game_id)
-        headers = HTMLRequests.get_title_request_headers()
+        headers = HTMLRequests.get_title_request_headers(request_user_agent)
 
         # Request and extract title
         contents = requests.get(HTMLRequests.GAME_URL, params=params, headers=headers, timeout=60)
@@ -301,8 +325,12 @@ class HTMLRequests:
         @return: The game title from the given id
         """
 
+        # This is a request to get the game title so we can generate a UserAgent
+        ua = UserAgent()
+        request_user_agent = ua.random.strip()
+
         params = HTMLRequests.get_title_request_parameters(game_id)
-        headers = HTMLRequests.get_title_request_headers()
+        headers = HTMLRequests.get_title_request_headers(request_user_agent)
 
         # Request and extract title
         timeout = aiohttp.ClientTimeout(total=60)
@@ -314,13 +342,13 @@ class HTMLRequests:
                 return None
 
     @staticmethod
-    def send_website_request_getcode(parse_all_scripts: bool):
+    def send_website_request_getcode(parse_all_scripts: bool, user_agent):
         """
         Function that send a request to howlongtobeat to scrape the correct search url
         @return: The search informations to use in the request
         """
         # Make the post request and return the result if is valid
-        headers = HTMLRequests.get_title_request_headers()
+        headers = HTMLRequests.get_title_request_headers(user_agent)
         resp = requests.get(HTMLRequests.BASE_URL, headers=headers, timeout=60)
         if resp.status_code == 200 and resp.text is not None:
             # Parse the HTML content using BeautifulSoup
@@ -341,13 +369,13 @@ class HTMLRequests:
         return None
 
     @staticmethod
-    async def async_send_website_request_getcode(parse_all_scripts: bool):
+    async def async_send_website_request_getcode(parse_all_scripts: bool, user_agent):
         """
         Function that send a request to howlongtobeat to scrape the correct search url
         @return: The search informations to use in the request
         """
         # Make the post request and return the result if is valid
-        headers = HTMLRequests.get_title_request_headers()
+        headers = HTMLRequests.get_title_request_headers(user_agent)
         timeout = aiohttp.ClientTimeout(total=60)
         async with aiohttp.ClientSession() as session:
             async with session.get(HTMLRequests.BASE_URL, headers=headers, timeout=timeout) as resp:
@@ -386,47 +414,47 @@ class HTMLRequests:
         params = {
             't': timestamp
         }
-        return params       
+        return params
 
     @staticmethod
-    def send_website_get_auth_token(parsed_search_url):
+    def send_website_get_auth_token(parsed_search_url, user_agent):
         """
         Function that send a request to howlongtobeat to get the x-auth-token to get in the request
         @return: The auth token to use
         """
         # Make the post request and return the result if is valid
-        headers = HTMLRequests.get_title_request_headers()
+        headers = HTMLRequests.get_title_request_headers(user_agent)
         params = HTMLRequests.get_auth_token_request_params()
-        auth_token = SearchAuthToken()
+        auth_struct = SearchAuthToken()
         auth_token_url = HTMLRequests.BASE_URL
         if parsed_search_url is not None:
-            auth_token_url = HTMLRequests.BASE_URL + parsed_search_url + auth_token.search_url_endpoint
+            auth_token_url = HTMLRequests.BASE_URL + parsed_search_url + auth_struct.search_url_endpoint
         else:
-            auth_token_url = HTMLRequests.BASE_URL + auth_token.search_url + auth_token.search_url_endpoint
+            auth_token_url = HTMLRequests.BASE_URL + auth_struct.search_url + auth_struct.search_url_endpoint
         resp = requests.get(auth_token_url, params=params, headers=headers, timeout=60)
         if resp.status_code == 200 and resp.text is not None:
-            return auth_token.extract_auth_token_from_response(resp)
+            return auth_struct.extract_auth_token_from_response(resp)
         return None
 
     @staticmethod
-    async def async_send_website_get_auth_token(parsed_search_url):
+    async def async_send_website_get_auth_token(parsed_search_url, user_agent):
         """
         Function that send a request to howlongtobeat to get the x-auth-token to get in the request
         @return: The auth token to use
         """
         # Make the post request and return the result if is valid
-        headers = HTMLRequests.get_title_request_headers()
+        headers = HTMLRequests.get_title_request_headers(user_agent)
         params = HTMLRequests.get_auth_token_request_params()
-        auth_token = SearchAuthToken()
+        auth_struct = SearchAuthToken()
         auth_token_url = HTMLRequests.BASE_URL
         if parsed_search_url is not None:
-            auth_token_url = HTMLRequests.BASE_URL + parsed_search_url + auth_token.search_url_endpoint
+            auth_token_url = HTMLRequests.BASE_URL + parsed_search_url + auth_struct.search_url_endpoint
         else:
-            auth_token_url = HTMLRequests.BASE_URL + auth_token.search_url + auth_token.search_url_endpoint
+            auth_token_url = HTMLRequests.BASE_URL + auth_struct.search_url + auth_struct.search_url_endpoint
         timeout = aiohttp.ClientTimeout(total=60)
         async with aiohttp.ClientSession() as session:
             async with session.get(auth_token_url, params=params, headers=headers, timeout=timeout) as resp:
                 if resp is not None and resp.status == 200:
                     json_data = await resp.json()
-                    return auth_token.extract_auth_token_from_json(json_data)
+                    return auth_struct.extract_auth_token_from_json(json_data)
         return None
