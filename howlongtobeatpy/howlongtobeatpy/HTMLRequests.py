@@ -232,9 +232,9 @@ class HTMLRequests:
         ua = UserAgent()
         request_user_agent = ua.random.strip()
         # Retrieve the updated URL
-        search_info_data = HTMLRequests.send_website_request_getcode(False, request_user_agent)
+        search_info_data = await HTMLRequests.async_send_website_request_getcode(False, request_user_agent)
         if search_info_data is None or search_info_data.search_url is None:
-            search_info_data = HTMLRequests.send_website_request_getcode(True, request_user_agent)
+            search_info_data = await HTMLRequests.async_send_website_request_getcode(True, request_user_agent)
         # Retrieve the request auth token
         auth_struct = None
         if search_info_data is not None and search_info_data.search_url is not None:
