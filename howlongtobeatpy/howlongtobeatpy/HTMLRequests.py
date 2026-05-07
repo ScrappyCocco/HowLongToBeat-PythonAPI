@@ -75,7 +75,7 @@ class SearchInformations:
 
 
 class SearchAuthToken:
-    search_url = "api/s"
+    search_url = "api/bleed"
     search_url_endpoint = "/init"
     auth_token = None
     auth_key = None
@@ -105,8 +105,12 @@ class HTMLRequests:
     BASE_URL = 'https://howlongtobeat.com/'
     REFERER_HEADER = BASE_URL
     GAME_URL = BASE_URL + "game"
-    # Static search url to use in case it can't be extracted from JS code
-    SEARCH_URL = BASE_URL + "api/s/"
+    # Static search url used as a fallback if extraction from JS fails.
+    # HLTB rotates this name periodically (api/find -> api/finder -> api/bleed,
+    # current as of 2026-05). The runtime extraction in
+    # send_website_request_getcode is the source of truth — this is just
+    # a backstop.
+    SEARCH_URL = BASE_URL + "api/bleed"
     HTML_PARSER = 'html.parser'
 
     @staticmethod
@@ -347,6 +351,13 @@ class HTMLRequests:
         """
         Function that send a request to howlongtobeat to scrape the correct search url
         @return: The search informations to use in the request
+
+        Note: ``parse_all_scripts`` is kept for backward compatibility but no
+        longer changes which scripts are inspected. HLTB used to bundle the
+        relevant code under ``_app-*.js``, but the modern (Turbopack) build
+        emits opaque chunk names like ``0-~-0up.q3_p0.js``, so a name-based
+        filter is no longer reliable — we iterate every ``<script src>`` tag
+        and stop at the first one that yields a ``search_url``.
         """
         # Make the post request and return the result if is valid
         headers = HTMLRequests.get_title_request_headers(user_agent)
@@ -354,14 +365,9 @@ class HTMLRequests:
         if resp.status_code == 200 and resp.text is not None:
             # Parse the HTML content using BeautifulSoup
             soup = BeautifulSoup(resp.text, HTMLRequests.HTML_PARSER)
-            # Find all <script> tags with a src attribute containing the substring
             scripts = soup.find_all('script', src=True)
-            if parse_all_scripts:
-                matching_scripts = [script['src'] for script in scripts]
-            else:
-                matching_scripts = [script['src'] for script in scripts if '_app-' in script['src']]
-            for script_url in matching_scripts:
-                script_url = HTMLRequests.BASE_URL + script_url
+            for script in scripts:
+                script_url = HTMLRequests.BASE_URL + script['src']
                 script_resp = requests.get(script_url, headers=headers, timeout=60)
                 if script_resp.status_code == 200 and script_resp.text is not None:
                     search_info = SearchInformations(script_resp.text)
@@ -374,36 +380,31 @@ class HTMLRequests:
         """
         Function that send a request to howlongtobeat to scrape the correct search url
         @return: The search informations to use in the request
+
+        See ``send_website_request_getcode`` for why ``parse_all_scripts`` is
+        no longer used.
         """
         # Make the post request and return the result if is valid
         headers = HTMLRequests.get_title_request_headers(user_agent)
         timeout = aiohttp.ClientTimeout(total=60)
         async with aiohttp.ClientSession() as session:
             async with session.get(HTMLRequests.BASE_URL, headers=headers, timeout=timeout) as resp:
-                if resp is not None and resp.status == 200:
-                    resp_text = await resp.text()
-                    # Parse the HTML content using BeautifulSoup
-                    soup = BeautifulSoup(resp_text, HTMLRequests.HTML_PARSER)
-                    # Find all <script> tags with a src attribute containing the substring
-                    scripts = soup.find_all('script', src=True)
-                    if parse_all_scripts:
-                        matching_scripts = [script['src'] for script in scripts]
-                    else:
-                        matching_scripts = [script['src'] for script in scripts if '_app-' in script['src']]
-                    for script_url in matching_scripts:
-                        script_url = HTMLRequests.BASE_URL + script_url
-                        async with aiohttp.ClientSession() as session:
-                            async with session.get(script_url, headers=headers, timeout=timeout) as script_resp:
-                                if script_resp is not None and resp.status == 200:
-                                    script_resp_text = await script_resp.text()
-                                    search_info = SearchInformations(script_resp_text)
-                                    if search_info.search_url is not None:
-                                        # The api key is necessary
-                                        return search_info
-                                else:
-                                    return None
-                else:
+                if resp is None or resp.status != 200:
                     return None
+                resp_text = await resp.text()
+                soup = BeautifulSoup(resp_text, HTMLRequests.HTML_PARSER)
+                scripts = soup.find_all('script', src=True)
+                for script in scripts:
+                    script_url = HTMLRequests.BASE_URL + script['src']
+                    async with aiohttp.ClientSession() as inner_session:
+                        async with inner_session.get(script_url, headers=headers, timeout=timeout) as script_resp:
+                            if script_resp is None or script_resp.status != 200:
+                                continue
+                            script_resp_text = await script_resp.text()
+                            search_info = SearchInformations(script_resp_text)
+                            if search_info.search_url is not None:
+                                return search_info
+                return None
                 
     @staticmethod
     def get_auth_token_request_params():
