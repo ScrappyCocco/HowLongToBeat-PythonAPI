@@ -4,7 +4,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setup(name='howlongtobeatpy',
-      version='1.0.22',
+      version='1.0.23',
       packages=find_packages(exclude=['tests']),
       description='A Python API for How Long to Beat',
       long_description=long_description,
@@ -14,7 +14,7 @@ setup(name='howlongtobeatpy',
       license='MIT',
       keywords='howlongtobeat gaming steam uplay origin time length how long to beat',
       install_requires=[
-          'aiohttp~=3.12',
+          'aiohttp~=3.14',
           'requests~=2.32',
           'aiounittest~=1.5',
           'fake_useragent~=2.2',
