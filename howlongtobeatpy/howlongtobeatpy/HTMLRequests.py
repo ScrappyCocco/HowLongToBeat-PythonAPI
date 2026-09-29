@@ -10,6 +10,7 @@ import aiohttp
 import requests
 from bs4 import BeautifulSoup
 from fake_useragent import UserAgent
+from .CustomLogger import console_logger, LogLevel
 
 # ---------------------------------------------------------------------
 
@@ -94,6 +95,7 @@ class HTMLRequests:
     # Static search url to use in case it can't be extracted from JS code
     SEARCH_URL = BASE_URL + "api/s/"
     HTML_PARSER = 'html.parser'
+    CUSTOM_LOGGER = console_logger(name="howlongtobeatpy", level=LogLevel.DEBUG)
 
     @staticmethod
     def get_search_request_headers(auth_struct, user_agent):
@@ -191,6 +193,7 @@ class HTMLRequests:
         if search_info_data is not None and search_info_data.search_url is not None:
             auth_struct = HTMLRequests.send_website_get_auth_token(search_info_data.search_url, request_user_agent)
         else:
+            HTMLRequests.CUSTOM_LOGGER.debug("send_web_request get token trying bad request")
             auth_struct = HTMLRequests.send_website_get_auth_token(None, request_user_agent)
         # Make the request
         headers = HTMLRequests.get_search_request_headers(auth_struct, request_user_agent)
@@ -200,6 +203,8 @@ class HTMLRequests:
         resp = requests.post(HTMLRequests.SEARCH_URL, headers=headers, data=payload, timeout=60)
         if resp.status_code == 200:
             return resp.text
+        else:
+            HTMLRequests.CUSTOM_LOGGER.debug("send_web_request bad request %s", str(resp.status_code))
         return None
 
     @staticmethod
@@ -222,6 +227,7 @@ class HTMLRequests:
         if search_info_data is not None and search_info_data.search_url is not None:
             auth_struct = await HTMLRequests.async_send_website_get_auth_token(search_info_data.search_url, request_user_agent)
         else:
+            HTMLRequests.CUSTOM_LOGGER.debug("send_async_web_request get token trying bad request")
             auth_struct = await HTMLRequests.async_send_website_get_auth_token(None, request_user_agent)
         # Make the request
         headers = HTMLRequests.get_search_request_headers(auth_struct, request_user_agent)
@@ -234,6 +240,7 @@ class HTMLRequests:
                 if resp_with_key is not None and resp_with_key.status == 200:
                     return await resp_with_key.text()
                 else:
+                    HTMLRequests.CUSTOM_LOGGER.debug("send_async_web_request bad request %s", str(resp_with_key.status))
                     return None
 
     @staticmethod
@@ -417,6 +424,8 @@ class HTMLRequests:
         resp = requests.get(auth_token_url, params=params, headers=headers, timeout=60)
         if resp.status_code == 200 and resp.text is not None:
             return auth_struct.extract_auth_token_from_response(resp)
+        else:
+            HTMLRequests.CUSTOM_LOGGER.debug("send_website_get_auth_token bad request %s", str(resp.status_code))
         return None
 
     @staticmethod
@@ -440,4 +449,6 @@ class HTMLRequests:
                 if resp is not None and resp.status == 200:
                     json_data = await resp.json()
                     return auth_struct.extract_auth_token_from_json(json_data)
+                else:
+                    HTMLRequests.CUSTOM_LOGGER.debug("async_send_website_get_auth_token bad request %s", str(resp.status))
         return None
