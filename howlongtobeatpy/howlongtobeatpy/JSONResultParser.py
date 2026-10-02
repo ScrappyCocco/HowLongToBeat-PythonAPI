@@ -73,17 +73,17 @@ class JSONResultParser:
         current_entry.json_content = input_game_element
         # Add a few times elements as help for the user
         # Calculate only if value is not None
-        if "comp_main" in input_game_element:
+        if "comp_main" in input_game_element and input_game_element.get("comp_main") is not None:
             current_entry.main_story = round(input_game_element.get("comp_main") / 3600, 2)
-        if "comp_plus" in input_game_element:
+        if "comp_plus" in input_game_element and input_game_element.get("comp_plus") is not None:
             current_entry.main_extra = round(input_game_element.get("comp_plus") / 3600, 2)
-        if "comp_100" in input_game_element:
+        if "comp_100" in input_game_element and input_game_element.get("comp_100") is not None:
             current_entry.completionist = round(input_game_element.get("comp_100") / 3600, 2)
-        if "comp_all" in input_game_element:
+        if "comp_all" in input_game_element and input_game_element.get("comp_all") is not None:
             current_entry.all_styles = round(input_game_element.get("comp_all") / 3600, 2)
-        if "invested_co" in input_game_element:
+        if "invested_co" in input_game_element and input_game_element.get("invested_co") is not None:
             current_entry.coop_time = round(input_game_element.get("invested_co") / 3600, 2)
-        if "invested_mp" in input_game_element:
+        if "invested_mp" in input_game_element and input_game_element.get("invested_mp") is not None:
             current_entry.mp_time = round(input_game_element.get("invested_mp") / 3600, 2)
         # Add complexity booleans
         current_entry.complexity_lvl_combine = bool(input_game_element.get("comp_lvl_combine", 0))
